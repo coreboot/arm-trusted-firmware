@@ -20,6 +20,7 @@
 #include <plat/arm/common/plat_arm.h>
 #include <plat/common/platform.h>
 
+#include <ele_api.h>
 #include <imx8_lpuart.h>
 #include <plat_common.h>
 #include <plat_imx8.h>
@@ -38,7 +39,7 @@ static const uintptr_t gicr_base_addrs[] = {
 static const mmap_region_t imx_mmap[] = {
 	AIPS1_MAP, AIPS2_MAP, AIPS4_MAP, GIC_MAP,
 	TRDC_A_MAP, TRDC_W_MAP, TRDC_M_MAP,
-	TRDC_N_MAP,
+	TRDC_N_MAP, S400_MU_MAP,
 	{0},
 };
 
@@ -148,6 +149,9 @@ void plat_gic_pre_pcpu_init(unsigned int cpu_idx)
 void bl31_platform_setup(void)
 {
 	generic_delay_timer_init();
+
+	/* Retrieve SoC info from EdgeLock Enclave */
+	ele_get_soc_info();
 }
 
 entry_point_info_t *bl31_plat_get_next_image_ep_info(unsigned int type)
