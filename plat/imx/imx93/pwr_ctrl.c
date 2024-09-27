@@ -63,5 +63,9 @@ void pwr_sys_init(void)
 
 	/* enable the HW LP handshake between S401 & A55 cluster */
 	mmio_setbits_32(BLK_CTRL_S_BASE + HW_LP_HANDHSK, BIT(5));
-}
 
+	/* Set the PMIC STBY OFF delay to 1.5ms by default */
+	mmio_clrsetbits_32(GPC_GLOBAL_BASE + PMIC_STBY_ACK_CTRL,
+			   PMIC_STBY_OFF_DELAY_MASK,
+			   PMIC_STBY_OFF_DELAY(PMIC_STBY_OFF_DELAY_1_5MS));
+}

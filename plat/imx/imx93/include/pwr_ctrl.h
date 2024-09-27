@@ -33,6 +33,13 @@
 #define PMIC_STBY_EN		BIT(0)
 #define ROSC_OFF_EN		BIT(0)
 
+/* PMIC_STBY_ACK_CTRL bit field definitions */
+#define PMIC_STBY_OFF_DELAY_SHIFT	16U
+#define PMIC_STBY_OFF_DELAY_MASK	(0xFFFU << PMIC_STBY_OFF_DELAY_SHIFT)
+#define PMIC_STBY_OFF_DELAY(x)		(((x) & 0xFFFU) << PMIC_STBY_OFF_DELAY_SHIFT)
+/* Default delay value for 1.5ms */
+#define PMIC_STBY_OFF_DELAY_1_5MS	0x31U
+
 /* GPC CPU_CTRL */
 #define CM_SLICE(x)		(GPC_BASE + 0x800 * (x))
 #define CM_AUTHEN_CTRL		U(0x4)
@@ -221,4 +228,3 @@ static inline void src_ack_cnt_mode(unsigned int mix, uint8_t mode)
 void pwr_sys_init(void);
 
 #endif /* PWR_CTRL_H */
-
