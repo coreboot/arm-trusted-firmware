@@ -245,6 +245,10 @@
 #define V2M_FLASH0_BASE			UL(0x0C000000)
 #endif
 #define V2M_FLASH0_SIZE			UL(0x02000000)
+#define QSPI_CONTROLLER_BASE_ADDR	0xe000000
+#define QSPI_CONTROLLER_SIZE		0x1000
+#define SCC_BASE_ADDR			0x7ff90000
+#define SCC_SIZE			0x1000
 #endif
 
 // TC_MAP_DEVICE covers different peripherals
