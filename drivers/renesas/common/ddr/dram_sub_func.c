@@ -9,6 +9,7 @@
 
 #include "dram_sub_func.h"
 #include "rcar_def.h"
+#include "rcar_private.h"
 
 #if RCAR_SYSTEM_SUSPEND
 /* Local defines */
@@ -41,23 +42,42 @@ void rcar_dram_get_boot_status(uint32_t *status)
 	uint32_t shift;
 	uint32_t gpio;
 
-	product = mmio_read_32(PRR) & PRR_PRODUCT_MASK;
-	if (product == PRR_PRODUCT_V3H) {
-		shift = GPIO_BKUP_TRG_SHIFT_CONDOR;
-		gpio = GPIO_INDT3;
-	} else if (product == PRR_PRODUCT_E3) {
-		shift = GPIO_BKUP_TRG_SHIFT_EBISU;
-		gpio = GPIO_INDT6;
-	} else {
-		shift = GPIO_BKUP_TRG_SHIFT_SALVATOR;
-		gpio = GPIO_INDT1;
-	}
+	if (is_rcar_product(PRODUCT_ID_M3L)) {
+#if PMIC_RAA271003
+		uint8_t status_val;
 
-	reg_data = mmio_read_32(gpio);
-	if (reg_data & BIT(shift))
-		*status = DRAM_BOOT_STATUS_WARM;
-	else
+		/* Judge cold/warm boot for M3Le by reading 0x75B reg */
+		rcar_iic_dvfs_receive(RAA271003_ADD_PAGE7, KEEP_STATUS_REG, &status_val);
+		if ((status_val & BOOT_STATUS_BIT) == BOOT_STATUS_BIT_WARM) {
+			*status = DRAM_BOOT_STATUS_WARM;
+		} else {
+			*status = DRAM_BOOT_STATUS_COLD;
+			rcar_iic_dvfs_send(RAA271003_ADD_PAGE7, KEEP_STATUS_REG,
+					   KEEP_STATUS_CLEAN_VAL);
+		}
+#else
 		*status = DRAM_BOOT_STATUS_COLD;
+#endif
+	} else {
+		product = mmio_read_32(PRR) & PRR_PRODUCT_MASK;
+		if (product == PRR_PRODUCT_V3H) {
+			shift = GPIO_BKUP_TRG_SHIFT_CONDOR;
+			gpio = GPIO_INDT3;
+		} else if (product == PRR_PRODUCT_E3) {
+			shift = GPIO_BKUP_TRG_SHIFT_EBISU;
+			gpio = GPIO_INDT6;
+		} else {
+			shift = GPIO_BKUP_TRG_SHIFT_SALVATOR;
+			gpio = GPIO_INDT1;
+		}
+
+		reg_data = mmio_read_32(gpio);
+		if (reg_data & BIT(shift)) {
+			*status = DRAM_BOOT_STATUS_WARM;
+		} else {
+			*status = DRAM_BOOT_STATUS_COLD;
+		}
+	}
 #else	/* RCAR_SYSTEM_SUSPEND */
 	*status = DRAM_BOOT_STATUS_COLD;
 #endif	/* RCAR_SYSTEM_SUSPEND */
@@ -81,6 +101,32 @@ int32_t rcar_dram_update_boot_status(uint32_t status)
 	uint32_t product;
 	uint32_t trg;
 	uint32_t gpio;
+
+#if PMIC_RAA271003
+	uint8_t data;
+
+	if (is_rcar_product(PRODUCT_ID_M3L)) {
+		/* Only Reset 0X122 in MEM_RET */
+		ret = rcar_iic_dvfs_receive(RAA271003_ADD_PAGE7, KEEP_STATUS_REG, &data);
+		if ((data & BOOT_STATUS_BIT) != BOOT_STATUS_BIT_WARM) {
+			return ret;
+		}
+
+		/* Read register 0x122 to check M0BKUP */
+		ret = rcar_iic_dvfs_receive(RAA271003_ADD_PAGE1, IO_GPIO9_CONF1_REG, &data);
+		if (ret != 0) {
+			return ret;
+		}
+
+		if (data != GPIO9_CONF1_MEM_RET_CFG_VAL) {
+			return 0;
+		}
+
+		return rcar_iic_dvfs_send(RAA271003_ADD_PAGE1,
+					  IO_GPIO9_CONF1_REG,
+					  GPIO9_CONF1_DEFAULT_VAL);
+	}
+#endif
 
 	product = mmio_read_32(PRR) & PRR_PRODUCT_MASK;
 	if (product == PRR_PRODUCT_V3H) {

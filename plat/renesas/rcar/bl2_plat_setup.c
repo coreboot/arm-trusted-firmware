@@ -36,11 +36,7 @@
 #include "emmc_def.h"
 #include "emmc_hal.h"
 #include "emmc_std.h"
-
-#if PMIC_ROHM_BD9571 && RCAR_SYSTEM_RESET_KEEPON_DDR
 #include "iic_dvfs.h"
-#endif
-
 #include "io_common.h"
 #include "io_rcar.h"
 #include "qos_init.h"
@@ -381,11 +377,33 @@ mmu:
 	isb();
 }
 
+#if RCAR_SYSTEM_SUSPEND && PMIC_RAA271003
+static uint32_t is_m3l_ddr_backup_mode(void)
+{
+	uint32_t boot_state = RCAR_COLD_BOOT;
+	uint8_t status_val;
+
+	/* Judge cold/warm boot for M3Le by read 0x75B reg */
+	rcar_iic_dvfs_receive(RAA271003_ADD_PAGE7, KEEP_STATUS_REG, &status_val);
+	if ((status_val & BOOT_STATUS_BIT) == BOOT_STATUS_BIT_WARM) {
+		boot_state = RCAR_WARM_BOOT;
+	}
+
+	return boot_state;
+}
+#endif /* RCAR_SYSTEM_SUSPEND && PMIC_RAA271003 */
+
 static uint32_t is_ddr_backup_mode(void)
 {
 #if RCAR_SYSTEM_SUSPEND
 	static uint32_t reason = RCAR_COLD_BOOT;
 	static uint32_t once;
+
+#if PMIC_RAA271003
+	if (is_rcar_product(PRODUCT_ID_M3L)) {
+		return is_m3l_ddr_backup_mode();
+	}
+#endif
 
 #if PMIC_ROHM_BD9571 && RCAR_SYSTEM_RESET_KEEPON_DDR
 	uint8_t data;
@@ -687,6 +705,11 @@ static void bl2_populate_compatible_string(void *dt)
 		ret = fdt_setprop_string(dt, 0, "compatible",
 					 "renesas,draak");
 		break;
+	case BOARD_GEIST:
+		ret = fdt_setprop_string(dt, 0, "compatible",
+					 "renesas,geist");
+		break;
+
 	default:
 		NOTICE("BL2: Cannot set compatible string, board unsupported\n");
 		panic();
@@ -709,6 +732,8 @@ static void bl2_populate_compatible_string(void *dt)
 		break;
 	case PRR_PRODUCT_M3N:
 		ret = fdt_appendprop_string(dt, 0, "compatible",
+					    is_rcar_product(PRODUCT_ID_M3L) ?
+					    "renesas,r8a779md" :
 					    "renesas,r8a77965");
 		break;
 	case PRR_PRODUCT_V3M:
@@ -947,7 +972,6 @@ static void bl2_advertise_dram_size(uint32_t product)
 		[6] = 0x700000000ULL,
 	};
 	uint32_t cut = mmio_read_32(RCAR_PRR) & PRR_CUT_MASK;
-
 	switch (product) {
 	case PRR_PRODUCT_H3:
 #if (RCAR_DRAM_LPDDR4_MEMCONF == 0)
@@ -990,13 +1014,19 @@ static void bl2_advertise_dram_size(uint32_t product)
 		break;
 
 	case PRR_PRODUCT_M3N:
+		if (is_rcar_product(PRODUCT_ID_M3L)) {
+			/* M3Le supports only 4GB (4GBx1) */
+			dram_config[1] = 0x100000000ULL;
+		} else {
+			/* M3N supports 2 below cases */
 #if (RCAR_DRAM_LPDDR4_MEMCONF == 2)
-		/* 4GB(4GBx1) */
-		dram_config[1] = 0x100000000ULL;
+			/* 4GB (4GBx1) */
+			dram_config[1] = 0x100000000ULL;
 #elif (RCAR_DRAM_LPDDR4_MEMCONF == 1)
-		/* 2GB(1GBx2) */
-		dram_config[1] = 0x80000000ULL;
+			/* 2GB (2GBx1) */
+			dram_config[1] = 0x80000000ULL;
 #endif
+		}
 		break;
 
 	case PRR_PRODUCT_V3M:
@@ -1037,6 +1067,7 @@ void bl2_early_platform_setup2(u_register_t arg1, u_register_t arg2,
 	const char *cpu_ca57 = "CA57";
 	const char *cpu_ca53 = "CA53";
 	const char *product_m3n = "M3N";
+	const char *product_m3l = "M3L";
 	const char *product_h3 = "H3";
 	const char *product_m3 = "M3";
 	const char *product_e3 = "E3";
@@ -1112,7 +1143,7 @@ void bl2_early_platform_setup2(u_register_t arg1, u_register_t arg2,
 		str = product_m3;
 		break;
 	case PRR_PRODUCT_M3N:
-		str = product_m3n;
+		str = is_rcar_product(PRODUCT_ID_M3N) ? product_m3n : product_m3l;
 		break;
 	case PRR_PRODUCT_V3M:
 		str = product_v3m;
@@ -1168,6 +1199,7 @@ void bl2_early_platform_setup2(u_register_t arg1, u_register_t arg2,
 	case BOARD_KRIEK:
 	case BOARD_STARTER_KIT:
 	case BOARD_SALVATOR_XS:
+	case BOARD_GEIST:
 	case BOARD_EBISU:
 	case BOARD_STARTER_KIT_PRE:
 	case BOARD_EBISU_4D:
@@ -1194,8 +1226,11 @@ void bl2_early_platform_setup2(u_register_t arg1, u_register_t arg2,
 		panic();
 	}
 #endif
-	rcar_avs_init();
-	rcar_avs_setting();
+
+	if (!is_rcar_product(PRODUCT_ID_M3L)) {
+		rcar_avs_init();
+		rcar_avs_setting();
+	}
 
 	switch (boot_dev) {
 	case MODEMR_BOOT_DEV_HYPERFLASH160:
@@ -1226,7 +1261,10 @@ void bl2_early_platform_setup2(u_register_t arg1, u_register_t arg2,
 	}
 	NOTICE("BL2: Boot device is %s\n", str);
 
-	rcar_avs_setting();
+	if (!is_rcar_product(PRODUCT_ID_M3L)) {
+		rcar_avs_setting();
+	}
+
 	reg = rcar_rom_get_lcs(&lcs);
 	if (reg) {
 		str = unknown;
@@ -1257,7 +1295,10 @@ void bl2_early_platform_setup2(u_register_t arg1, u_register_t arg2,
 lcm_state:
 	NOTICE("BL2: LCM state is %s\n", str);
 
-	rcar_avs_end();
+	if (!is_rcar_product(PRODUCT_ID_M3L)) {
+		rcar_avs_end();
+	}
+
 	is_ddr_backup_mode();
 
 	bl2_tzram_layout.total_base = BL31_BASE;

@@ -59,6 +59,10 @@ void plat_secondary_reset(void);
 
 void rcar_pwrc_code_copy_to_system_ram(void);
 
+#if PMIC_RAA271003
+void raa271003_system_reset(void);
+#endif
+
 #if !PMIC_ROHM_BD9571
 void rcar_pwrc_system_reset(void);
 #endif
