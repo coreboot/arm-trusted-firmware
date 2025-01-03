@@ -1571,7 +1571,7 @@ static const struct ti_clk_data_from_dev clk_data_cpsw_3guss_am62l_main_0_mdio_m
 	.clk_idx = AM62LX_DEV_CPSW0_MDIO_MDCLK_O,
 };
 static const struct ti_clk_data_from_dev clk_data_debugss_k3_wrap_cv0_main_0_cstpiu_traceclk = {
-	.dev = AM62LX_DEV_DEBUGSS_WRAP0,
+	.dev = AM62LX_DEV_DBGSS_WP,
 	.clk_idx = AM62LX_DEV_DEBUGSS_WRAP0_CSTPIU_TRACECLK,
 };
 static const struct ti_clk_data_from_dev clk_data_dmtimer_dmc1ms_main_0_timer_pwm = {
@@ -1976,17 +1976,17 @@ static const struct ti_clk_data_div_reg clk_data_sam62_pll_ctrl_wrap_wkup_0_chip
 };
 static const struct ti_clk_data_from_dev
 clk_data_a53_divh_clk4_obsclk_out_clk = {
-	.dev = AM62LX_DEV_COMPUTE_CLUSTER0_ARM_COREPACK_0,
+	.dev = AM62LX_DEV_ARM_CPK,
 	.clk_idx = AM62LX_DEV_COMPUTE_CLUSTER0_ARM_COREPACK_0_A53_DIVH_CLK4_OBSCLK_OUT_CLK,
 };
 static const struct ti_clk_data_from_dev
 clk_data_sam62l_a53_256kb_wrap_main_0_clkdiv_0_divh_clk4_clk_clk = {
-	.dev = AM62LX_DEV_COMPUTE_CLUSTER0_CLKDIV_0,
+	.dev = AM62LX_DEV_CLKDIV_0,
 	.clk_idx = AM62LX_DEV_COMPUTE_CLUSTER0_CLKDIV_0_DIVH_CLK4_CLK_CLK,
 };
 static const struct ti_clk_data_from_dev
 clk_data_sam62l_a53_256kb_wrap_main_0_clkdiv_0_divp_clk1_clk_clk = {
-	.dev = AM62LX_DEV_COMPUTE_CLUSTER0_CLKDIV_0,
+	.dev = AM62LX_DEV_CLKDIV_0,
 	.clk_idx = AM62LX_DEV_COMPUTE_CLUSTER0_CLKDIV_0_DIVP_CLK1_CLK_CLK,
 };
 static const struct ti_clk_data_from_dev clk_data_spi_main_0_io_clkspio_clk = {

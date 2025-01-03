@@ -68,6 +68,8 @@ PLAT_INCLUDES +=	\
 			-I${PLAT_PATH}/common/drivers/k3-ddrss/16bit \
 			-I${PLAT_PATH}/board/${TARGET_BOARD}/include	\
 			-I${PLAT_PATH}					\
+			-I${PLAT_PATH}/common/pm		\
+			-I${PLAT_PATH}/common/scmi		\
 			-Idrivers/scmi-msg				\
 			-Iplat/ti/common/include			\
 			-Iplat/ti/common/scmi				\
@@ -87,13 +89,18 @@ K3_TI_SCI_TRANSPORT	:= \
 				drivers/ti/ipc/mailbox.c \
 
 BL31_SOURCES		+= \
+				drivers/clk/clk.c			\
 				drivers/delay_timer/delay_timer.c \
 				drivers/delay_timer/generic_delay_timer.c \
 				drivers/scmi-msg/base.c		\
 				drivers/scmi-msg/entry.c	\
 				drivers/scmi-msg/smt.c		\
+				drivers/scmi-msg/clock.c	\
+				drivers/scmi-msg/power_domain.c \
 				${K3_PSCI_SOURCES}		\
 				${K3_TI_SCI_TRANSPORT}		\
+				${PLAT_PATH}/common/scmi/ti_scmi_clk_data.c	\
+				${PLAT_PATH}/common/scmi/ti_scmi_pd_data.c	\
 				${PLAT_PATH}/common/am62l_bl31_setup.c \
 				${PLAT_PATH}/common/am62l_topology.c \
 				${PLAT_PATH}/common/drivers/firewall/firewall_config.c \
