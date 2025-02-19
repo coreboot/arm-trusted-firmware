@@ -102,6 +102,7 @@ void bl31_plat_arch_setup(void)
 	const mmap_region_t bl_regions[] = {
 		MAP_BL31_TOTAL,
 		MAP_BL31_RO,
+		{0}
 	};
 
 	/* Assign all the GPIO pins to non-secure world by default */
