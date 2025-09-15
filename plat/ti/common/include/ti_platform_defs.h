@@ -89,7 +89,7 @@
 #if USE_COHERENT_MEM
 #define MAX_MMAP_REGIONS	11
 #else
-#define MAX_MMAP_REGIONS	10
+#define MAX_MMAP_REGIONS	11
 #endif
 
 /*
