@@ -242,7 +242,7 @@ static uint64_t spmd_secure_interrupt_handler(uint32_t id,
 {
 	spmd_spm_core_context_t *ctx = spmd_get_context();
 	gp_regs_t *gpregs = get_gpregs_ctx(&ctx->cpu_ctx);
-	int64_t rc;
+	uint64_t rc;
 
 	/* Sanity check the security state when the exception was generated */
 	assert(get_interrupt_src_ss(flags) == NON_SECURE);
@@ -283,7 +283,7 @@ static uint64_t spmd_secure_interrupt_handler(uint32_t id,
 	rc = spmd_spm_core_sync_entry(ctx);
 
 	if (rc != 0ULL) {
-		ERROR("%s failed (%" PRId64 ") on CPU%u\n", __func__, rc, plat_my_core_pos());
+		ERROR("%s failed (0x%" PRIx64 ") on CPU%u\n", __func__, rc, plat_my_core_pos());
 	}
 
 	ctx->secure_interrupt_ongoing = false;
@@ -1048,8 +1048,8 @@ uint64_t spmd_smc_handler(uint32_t smc_fid,
 			gp_regs_t *gpregs = get_gpregs_ctx(&ctx->cpu_ctx);
 			uint64_t rc;
 
-			if (spmc_attrs.major_version == 1 &&
-			    spmc_attrs.minor_version == 0) {
+			if (spmc_attrs.major_version == 1U &&
+			    spmc_attrs.minor_version == 0U) {
 				ret = MAKE_FFA_VERSION(spmc_attrs.major_version,
 						       spmc_attrs.minor_version);
 				spmc_nwd_ffa_version = (uint32_t)ret;
@@ -1403,7 +1403,7 @@ uint64_t spmd_smc_handler(uint32_t smc_fid,
 		}
 
 		/* Call only supported with SMCCC 1.2+ */
-		if (MAKE_SMCCC_VERSION(SMCCC_MAJOR_VERSION, SMCCC_MINOR_VERSION) < 0x10002) {
+		if (MAKE_SMCCC_VERSION(SMCCC_MAJOR_VERSION, SMCCC_MINOR_VERSION) < 0x10002U) {
 			return spmd_ffa_error_return(handle, FFA_ERROR_NOT_SUPPORTED);
 		}
 
