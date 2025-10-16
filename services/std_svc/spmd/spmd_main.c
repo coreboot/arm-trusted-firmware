@@ -1018,7 +1018,7 @@ uint64_t spmd_smc_handler(uint32_t smc_fid,
 		 * If the EL3 SPMC is enabled, ignore the SPMC state as
 		 * this is not used.
 		 */
-		if ((input_version & FFA_VERSION_BIT31_MASK) ||
+		if (((input_version & FFA_VERSION_BIT31_MASK) != 0U) ||
 		    (!is_spmc_at_el3() && (ctx->state == SPMC_STATE_RESET))) {
 			ret = FFA_ERROR_NOT_SUPPORTED;
 		} else if (!secure_origin) {
@@ -1204,7 +1204,7 @@ uint64_t spmd_smc_handler(uint32_t smc_fid,
 		break; /* Not reached */
 
 	case FFA_SPM_ID_GET:
-		if (MAKE_FFA_VERSION(1, 1) > FFA_VERSION_COMPILED) {
+		if (MAKE_FFA_VERSION(1U, 1U) > FFA_VERSION_COMPILED) {
 			return spmd_ffa_error_return(handle,
 						     FFA_ERROR_NOT_SUPPORTED);
 		}
