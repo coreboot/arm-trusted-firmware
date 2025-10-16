@@ -240,6 +240,9 @@ static uint64_t spmd_secure_interrupt_handler(uint32_t id,
 					      void *handle,
 					      void *cookie)
 {
+	(void)id;
+	(void)cookie;
+
 	spmd_spm_core_context_t *ctx = spmd_get_context();
 	gp_regs_t *gpregs = get_gpregs_ctx(&ctx->cpu_ctx);
 	uint64_t rc;
@@ -332,6 +335,9 @@ static uint64_t spmd_group0_interrupt_handler_nwd(uint32_t id,
 						  void *handle,
 						  void *cookie)
 {
+
+	(void)cookie;
+
 	uint32_t intid, intr_raw;
 
 	/* Sanity check the security state when the exception was generated. */
