@@ -1048,8 +1048,8 @@ uint64_t spmd_smc_handler(uint32_t smc_fid,
 			gp_regs_t *gpregs = get_gpregs_ctx(&ctx->cpu_ctx);
 			uint64_t rc;
 
-			if (spmc_attrs.major_version == 1U &&
-			    spmc_attrs.minor_version == 0U) {
+			if ((spmc_attrs.major_version == 1U) &&
+			    (spmc_attrs.minor_version == 0U)) {
 				ret = MAKE_FFA_VERSION(spmc_attrs.major_version,
 						       spmc_attrs.minor_version);
 				spmc_nwd_ffa_version = (uint32_t)ret;
