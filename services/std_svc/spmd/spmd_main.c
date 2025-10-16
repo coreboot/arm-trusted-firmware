@@ -1005,7 +1005,7 @@ uint64_t spmd_smc_handler(uint32_t smc_fid,
 		break; /* not reached */
 
 	case FFA_VERSION:
-		input_version = (uint32_t)(0xFFFFFFFF & x1);
+		input_version = (uint32_t)(0xFFFFFFFFUL & x1);
 		/*
 		 * If caller is secure and SPMC was initialized,
 		 * return FFA_VERSION of SPMD.
