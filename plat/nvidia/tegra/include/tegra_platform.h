@@ -50,8 +50,6 @@ uint32_t tegra_get_chipid_minor(void);
  * Tegra chip ID identifiers
  */
 bool tegra_chipid_is_t186(void);
-bool tegra_chipid_is_t210(void);
-bool tegra_chipid_is_t210_b01(void);
 bool tegra_chipid_is_t194(void);
 
 /*

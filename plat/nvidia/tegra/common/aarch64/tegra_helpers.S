@@ -311,23 +311,6 @@ func tegra_secure_entrypoint _align=6
 
 #if ERRATA_TEGRA_INVALIDATE_BTB_AT_BOOT
 
-	/* --------------------------------------------------------
-	 * Skip the invalidate BTB workaround for Tegra210B01 SKUs.
-	 * --------------------------------------------------------
-	 */
-	mov	x0, #TEGRA_MISC_BASE
-	add	x0, x0, #HARDWARE_REVISION_OFFSET
-	ldr	w1, [x0]
-	lsr	w1, w1, #CHIP_ID_SHIFT
-	and	w1, w1, #CHIP_ID_MASK
-	cmp	w1, #TEGRA_CHIPID_TEGRA21	/* T210? */
-	b.ne	2f
-	ldr	w1, [x0]
-	lsr	w1, w1, #MAJOR_VERSION_SHIFT
-	and	w1, w1, #MAJOR_VERSION_MASK
-	cmp	w1, #0x02			/* T210 B01? */
-	b.eq	2f
-
 	/* -------------------------------------------------------
 	 * Invalidate BTB along with I$ to remove any stale
 	 * entries from the branch predictor array.

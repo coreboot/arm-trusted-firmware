@@ -54,17 +54,6 @@ Denver also features new low latency power-state transitions, in addition
 to extensive power-gating and dynamic voltage and clock scaling based on
 workloads.
 
--  .. rubric:: T210
-      :name: t210
-
-T210 has Quad Arm® Cortex®-A57 cores in a switched configuration with a
-companion set of quad Arm Cortex-A53 cores. The Cortex-A57 and A53 cores
-support Armv8-A, executing both 64-bit Aarch64 code, and 32-bit Aarch32 code
-including legacy Armv7-A applications. The Cortex-A57 processors each have
-48 KB Instruction and 32 KB Data Level 1 caches; and have a 2 MB shared
-Level 2 unified cache. The Cortex-A53 processors each have 32 KB Instruction
-and 32 KB Data Level 1 caches; and have a 512 KB shared Level 2 unified cache.
-
 Directory structure
 -------------------
 
@@ -86,7 +75,6 @@ their dispatchers in the image without changing any makefiles.
 
 These are the supported Trusted OS' by Tegra platforms.
 
-- Tegra210: TLK and Trusty
 - Tegra186: Trusty
 - Tegra194: Trusty
 
@@ -106,7 +94,7 @@ Preparing the BL31 image to run on Tegra SoCs
 .. code:: shell
 
     CROSS_COMPILE=<path-to-aarch64-gcc>/bin/aarch64-none-elf- make PLAT=tegra \
-    TARGET_SOC=<target-soc e.g. t194|t186|t210> SPD=<dispatcher e.g. trusty|tlkd>
+    TARGET_SOC=<target-soc e.g. t194|t186> SPD=<dispatcher e.g. trusty|tlkd>
     bl31
 
 Note that all Tegra platforms only support compiling with GCC or ARMCLANG. Clang
