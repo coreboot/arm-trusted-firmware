@@ -1,14 +1,14 @@
 #
 # Copyright (c) 2017-2025, Arm Limited and Contributors. All rights reserved.
-# Copyright (c) 2018-2021, The Linux Foundation. All rights reserved.
+# Copyright (c) 2018-2020, The Linux Foundation. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
 
-# Make for SC7280 QTI platform.
+# Make for SC7180 QTI platform.
 
 QTI_PLAT_PATH		:=	plat/qti
-CHIPSET			:=	kodiak
+CHIPSET			:=	${PLAT}
 
 # Turn On Separate code & data.
 SEPARATE_CODE_AND_RODATA	:=	1
@@ -16,18 +16,16 @@ USE_COHERENT_MEM		:=	0
 WARMBOOT_ENABLE_DCACHE_EARLY	:=	1
 HW_ASSISTED_COHERENCY		:=	1
 
-#Enable errata configs for cortex_a78 and cortex_a55
-ERRATA_A55_1530923 		:=	1
-ERRATA_A78_1941498 		:=	1
-ERRATA_A78_1951500 		:=	1
-
 # Disable the PSCI platform compatibility layer
 ENABLE_PLAT_COMPAT		:=	0
+
+#Enable errata for cortex_a55 and cortex_a76
+ERRATA_A55_1530923 		:= 	1
+ERRATA_A76_1165522 		:= 	1
 
 # Enable PSCI v1.0 extended state ID format
 PSCI_EXTENDED_STATE_ID	:=  1
 ARM_RECOM_STATE_ID_ENC  :=  1
-PSCI_OS_INIT_MODE	:=  1
 
 COLD_BOOT_SINGLE_CPU		:=	1
 PROGRAMMABLE_RESET_ADDRESS	:=	1
@@ -42,7 +40,7 @@ QTI_SDI_BUILD := 0
 $(eval $(call assert_boolean,QTI_SDI_BUILD))
 $(eval $(call add_define,QTI_SDI_BUILD))
 
-#disable CTX_INCLUDE_AARCH32_REGS to support sc7280 gold cores
+#disable CTX_INCLUDE_AARCH32_REGS to support sc7180 gold cores
 override CTX_INCLUDE_AARCH32_REGS	:=	0
 WORKAROUND_CVE_2017_5715		:=      0
 DYNAMIC_WORKAROUND_CVE_2018_3639	:=      1
@@ -50,16 +48,15 @@ DYNAMIC_WORKAROUND_CVE_2018_3639	:=      1
 ENABLE_STACK_PROTECTOR := strong
 
 
-QTI_EXTERNAL_INCLUDES	:=	-I${QTI_PLAT_PATH}/${CHIPSET}/inc			\
-				-I${QTI_PLAT_PATH}/${CHIPSET}/${PLAT}/inc		\
+QTI_EXTERNAL_INCLUDES	:=	-I${QTI_PLAT_PATH}/hoya/${CHIPSET}/inc			\
 				-I${QTI_PLAT_PATH}/common/inc				\
 				-I${QTI_PLAT_PATH}/common/inc/$(ARCH)			\
-				-I${QTI_PLAT_PATH}/qtiseclib/inc			\
-				-I${QTI_PLAT_PATH}/qtiseclib/inc/${CHIPSET}		\
+				-I${QTI_PLAT_PATH}/hoya/qtiseclib/inc			\
+				-I${QTI_PLAT_PATH}/hoya/qtiseclib/inc/${CHIPSET}			\
 
 QTI_BL31_SOURCES	:=	$(QTI_PLAT_PATH)/common/src/$(ARCH)/qti_helpers.S	\
-				$(QTI_PLAT_PATH)/common/src/$(ARCH)/qti_kryo6_silver.S	\
-				$(QTI_PLAT_PATH)/common/src/$(ARCH)/qti_kryo6_gold.S	\
+				$(QTI_PLAT_PATH)/common/src/$(ARCH)/qti_kryo4_silver.S	\
+				$(QTI_PLAT_PATH)/common/src/$(ARCH)/qti_kryo4_gold.S	\
 				$(QTI_PLAT_PATH)/common/src/$(ARCH)/qti_uart_console.S	\
 				$(QTI_PLAT_PATH)/common/src/pm_ps_hold.c			\
 				$(QTI_PLAT_PATH)/common/src/qti_stack_protector.c	\
@@ -71,7 +68,7 @@ QTI_BL31_SOURCES	:=	$(QTI_PLAT_PATH)/common/src/$(ARCH)/qti_helpers.S	\
 				$(QTI_PLAT_PATH)/common/src/qti_topology.c		\
 				$(QTI_PLAT_PATH)/common/src/qti_pm.c			\
 				$(QTI_PLAT_PATH)/common/src/spmi_arb.c			\
-				$(QTI_PLAT_PATH)/qtiseclib/src/qtiseclib_cb_interface.c	\
+				$(QTI_PLAT_PATH)/hoya/qtiseclib/src/qtiseclib_cb_interface.c	\
 				drivers/qti/crypto/rng.c
 
 
@@ -103,7 +100,7 @@ TIMER_SOURCES		:=	drivers/delay_timer/generic_delay_timer.c	\
 GIC_SOURCES		:=	plat/common/plat_gicv3.c			\
 				${GICV3_SOURCES}				\
 
-CPU_SOURCES		:=	lib/cpus/aarch64/cortex_a78.S			\
+CPU_SOURCES		:=	lib/cpus/aarch64/cortex_a76.S			\
 				lib/cpus/aarch64/cortex_a55.S			\
 
 BL31_SOURCES		+=	${QTI_BL31_SOURCES}				\
@@ -112,15 +109,12 @@ BL31_SOURCES		+=	${QTI_BL31_SOURCES}				\
 				${TIMER_SOURCES}				\
 				${CPU_SOURCES}					\
 
+LIB_QTI_PATH	:=	${QTI_PLAT_PATH}/hoya/qtiseclib/lib/${CHIPSET}
+
+
 # Override this on the command line to point to the qtiseclib library which
 # will be available in coreboot.org
 QTISECLIB_PATH ?=
-
-# Note: When enabling this driver, you must:
-# - use a QTISECLIB with this functionality disabled.
-# - remove the corresponding stub
-#
-# include drivers/qti/accesscontrol/access_control.mk
 
 # QTISECLIB drivers
 BL31_SOURCES	+=		drivers/qti/accesscontrol/access_control_stub.c \
@@ -133,9 +127,9 @@ ifeq ($(QTISECLIB_PATH),)
 $(warning QTISECLIB_PATH is not provided while building, using stub implementation. \
 		Please refer docs/plat/qti.rst for more details \
 		THIS FIRMWARE WILL NOT BOOT!)
-BL31_SOURCES	+=	plat/qti/qtiseclib/src/qtiseclib_interface_stub.c
+BL31_SOURCES	+=	plat/qti/hoya/qtiseclib/src/qtiseclib_interface_stub.c
 else
 # use library provided by QTISECLIB_PATH
-LDFLAGS += -L $(dir $(QTISECLIB_PATH))
-LDLIBS += -l$(patsubst lib%.a,%,$(notdir $(QTISECLIB_PATH)))
+LDLIBS += $(QTISECLIB_PATH)
 endif
+

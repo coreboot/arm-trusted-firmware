@@ -1,13 +1,13 @@
 #
-# Copyright (c) 2025, Qualcomm Technologies, Inc. and/or its subsidiaries.
+# Copyright (c) 2026, Qualcomm Technologies, Inc. and/or its subsidiaries.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
 
-# Makefile for Kodiak based RB3Gen2 QTI platform.
+# Makefile for Lemans based QCS9075/EVK QTI platform.
 
 PLAT_PATH				:=	plat/qti
-CHIPSET					:=	kodiak
+CHIPSET					:=	lemans
 
 RESET_TO_BL2				:=	1
 
@@ -17,10 +17,15 @@ USE_COHERENT_MEM			:=	0
 WARMBOOT_ENABLE_DCACHE_EARLY		:=	1
 HW_ASSISTED_COHERENCY			:=	1
 
-#Enable errata configs for cortex_a78 and cortex_a55
-ERRATA_A55_1530923 			:=	1
-ERRATA_A78_1941498 			:=	1
-ERRATA_A78_1951500 			:=	1
+#Enable errata configs for cortex_a78c
+ERRATA_A78C_2242638			:=	1
+ERRATA_A78C_2376749			:=	1
+ERRATA_A78C_2395411			:=	1
+ERRATA_A78C_2683027			:=	1
+ERRATA_A78C_2712575			:=	1
+ERRATA_A78C_2743232			:=	1
+ERRATA_A78C_2772121			:=	1
+ERRATA_A78C_2779484			:=	1
 
 # Enable PSCI v1.0 extended state ID format
 PSCI_EXTENDED_STATE_ID			:=	1
@@ -41,7 +46,7 @@ $(eval $(call add_define,QTI_MSM_XPU_BYPASS))
 PLAT_XLAT_TABLES_DYNAMIC		:=	1
 $(eval $(call add_define,PLAT_XLAT_TABLES_DYNAMIC))
 
-#disable CTX_INCLUDE_AARCH32_REGS to support kodiak gold cores
+#disable CTX_INCLUDE_AARCH32_REGS to support lemans gold cores
 override CTX_INCLUDE_AARCH32_REGS	:=	0
 WORKAROUND_CVE_2017_5715		:=      0
 DYNAMIC_WORKAROUND_CVE_2018_3639	:=      1
@@ -49,23 +54,18 @@ DYNAMIC_WORKAROUND_CVE_2018_3639	:=      1
 ENABLE_STACK_PROTECTOR := strong
 
 PLAT_INCLUDES		:=	-Iinclude/plat/common/					\
-				-I${PLAT_PATH}/${CHIPSET}/inc				\
-				-I${PLAT_PATH}/${CHIPSET}/${PLAT}/inc			\
+				-I${PLAT_PATH}/hoya/${CHIPSET}/inc				\
+				-I${PLAT_PATH}/hoya/${CHIPSET}/${PLAT}/inc			\
 				-I${PLAT_PATH}/common/inc				\
 				-I${PLAT_PATH}/common/inc/$(ARCH)			\
-				-I${PLAT_PATH}/qtiseclib/inc				\
-				-I${PLAT_PATH}/qtiseclib/inc/${CHIPSET}
+				-I${PLAT_PATH}/hoya/qtiseclib/inc				\
+				-I${PLAT_PATH}/hoya/qtiseclib/inc/${CHIPSET}
 
 include lib/xlat_tables_v2/xlat_tables.mk
-
-ifeq ($(QTI_MSM_XPU_BYPASS),1)
-PLAT_BL_COMMON_SOURCES	+=	drivers/qti/accesscontrol/xpu.c
-endif
-
 PLAT_BL_COMMON_SOURCES	+=	common/desc_image_load.c				\
 				drivers/qti/crypto/rng.c				\
-				lib/cpus/aarch64/cortex_a78.S				\
-				lib/cpus/aarch64/cortex_a55.S				\
+				drivers/qti/accesscontrol/xpu.c				\
+				lib/cpus/aarch64/cortex_a78c.S				\
 				lib/bl_aux_params/bl_aux_params.c			\
 				plat/common/aarch64/crash_console_helpers.S		\
 				$(PLAT_PATH)/common/src/$(ARCH)/qti_uart_console.S	\
@@ -81,16 +81,9 @@ BL2_SOURCES		+=	drivers/io/io_fip.c					\
 				$(PLAT_PATH)/common/src/qti_image_desc.c		\
 				$(PLAT_PATH)/common/src/qti_io_storage.c
 
-# Switch on QTI SMMU driver support
-# This stops Lemans and other QTI platforms that don't support the SMMU driver from failing to build
-ENABLE_QTI_SMMU := 1
-$(eval $(call add_define,ENABLE_QTI_SMMU))
-
 include drivers/arm/gic/v3/gicv3.mk
 BL31_SOURCES		+=	drivers/delay_timer/generic_delay_timer.c		\
 				drivers/delay_timer/delay_timer.c			\
-				drivers/qti/smmu/$(CHIPSET)/smmu_cfg.c			\
-				drivers/qti/smmu/smmu.c					\
 				plat/common/plat_gicv3.c				\
 				${GICV3_SOURCES}					\
 				plat/common/plat_psci_common.c				\
@@ -103,7 +96,12 @@ BL31_SOURCES		+=	drivers/delay_timer/generic_delay_timer.c		\
 				$(PLAT_PATH)/common/src/qti_topology.c			\
 				$(PLAT_PATH)/common/src/qti_pm.c			\
 				$(PLAT_PATH)/common/src/spmi_arb.c			\
-				$(PLAT_PATH)/qtiseclib/src/qtiseclib_cb_interface.c
+				$(PLAT_PATH)/hoya/qtiseclib/src/qtiseclib_cb_interface.c
+
+BL31_SOURCES	+=		drivers/qti/sec_core/sec_core_stub.c \
+				drivers/qti/qtimer/qtimer_stub.c \
+				drivers/qti/watchdog/watchdog_stub.c \
+				drivers/qti/accesscontrol/access_control_stub.c
 
 # Override this on the command line to point to the qtiseclib library
 QTISECLIB_PATH ?=
@@ -113,24 +111,10 @@ ifeq ($(QTISECLIB_PATH),)
 $(warning QTISECLIB_PATH is not provided while building, using stub implementation. \
 		Please refer to documentation for more details \
 		THIS FIRMWARE WILL NOT BOOT!)
-
-include drivers/qti/accesscontrol/access_control.mk
-
-PLAT_INCLUDES	+=	-Iinclude/drivers/qti/sec_core/${CHIPSET} \
-			-Iinclude/drivers/qti/qtimer/${CHIPSET} \
-			-Iinclude/drivers/qti/watchdog/${CHIPSET}
-
-BL31_SOURCES	+=	plat/qti/qtiseclib/src/qtiseclib_interface_stub.c \
-			drivers/qti/sec_core/sec_core.c \
-			drivers/qti/qtimer/qtimer.c \
-			drivers/qti/watchdog/watchdog.c
+BL31_SOURCES	+=	plat/qti/hoya/qtiseclib/src/qtiseclib_interface_stub.c
 else
 $(eval $(call add_define,QTISECLIB_PATH))
 # use library provided by QTISECLIB_PATH
-BL31_SOURCES	+=			drivers/qti/sec_core/sec_core_stub.c \
-					drivers/qti/qtimer/qtimer_stub.c \
-					drivers/qti/watchdog/watchdog_stub.c \
-					drivers/qti/accesscontrol/access_control_stub.c
 LDFLAGS += -L $(dir $(QTISECLIB_PATH))
 LDLIBS += -l$(patsubst lib%.a,%,$(notdir $(QTISECLIB_PATH)))
 endif
