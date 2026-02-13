@@ -7,6 +7,9 @@
 PLAT_PATH	:=	plat/ti/k3low
 TARGET_BOARD	?=	am62lx-evm
 
+# Force inline atomic operations instead of library calls
+TF_CFLAGS_aarch64 += -mno-outline-atomics
+
 include plat/ti/common/plat_common.mk
 include ${PLAT_PATH}/board/${TARGET_BOARD}/board.mk
 include drivers/ti/clk/ti_clk.mk
