@@ -176,14 +176,14 @@ static int lfa_prime(uint32_t component_id, uint64_t *flags)
 	int ret = LFA_SUCCESS;
 	struct lfa_component_ops *activator;
 
-	if (lfa_component_count == 0U ||
-	    !lfa_components[component_id].activation_pending) {
-		return LFA_WRONG_STATE;
-	}
-
 	/* Check if fw_seq_id is in range. */
 	if (component_id >= lfa_component_count) {
 		return LFA_INVALID_PARAMETERS;
+	}
+
+	if (lfa_component_count == 0U ||
+	    !lfa_components[component_id].activation_pending) {
+		return LFA_WRONG_STATE;
 	}
 
 	if (lfa_components[component_id].activator == NULL) {
