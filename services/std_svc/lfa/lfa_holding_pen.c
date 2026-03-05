@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025, Arm Limited. All rights reserved.
+ * Copyright (c) 2025-2026, Arm Limited. All rights reserved.
  * Copyright (c) 2026, NVIDIA Corporation. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
@@ -60,7 +60,7 @@ bool lfa_holding_start(void)
 	status = (activation_count == no_of_cpus);
 	if (!status) {
 		VERBOSE("Hold, %d CPU left\n",
-			 PLATFORM_CORE_COUNT - activation_count);
+			 no_of_cpus - activation_count);
 	}
 
 	spin_unlock(&activation_lock);
