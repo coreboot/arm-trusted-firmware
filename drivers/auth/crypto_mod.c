@@ -9,7 +9,10 @@
 
 #include <common/debug.h>
 #include <drivers/auth/crypto_mod.h>
-#include <drivers/measured_boot/event_log/tcg.h>
+#if CRYPTO_SUPPORT == CRYPTO_HASH_CALC_ONLY || \
+	CRYPTO_SUPPORT == CRYPTO_AUTH_VERIFY_AND_HASH_CALC
+#include <tcg.h>
+#endif
 
 /* Variable exported by the crypto library through REGISTER_CRYPTO_LIB() */
 
