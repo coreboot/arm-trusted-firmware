@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2025, Arm Limited and Contributors. All rights reserved.
+ * Copyright (c) 2016-2026, Arm Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -477,6 +477,28 @@ const partition_entry_t *get_partition_entry_by_type(
 	for (i = 0U; i < list.entry_count; i++) {
 		if (guidcmp(type_guid, &list.list[i].type_guid) == 0) {
 			return &list.list[i];
+		}
+	}
+
+	return NULL;
+}
+
+const partition_entry_t *get_partition_entry_by_type_index(
+	const struct efi_guid *type_guid, unsigned int index)
+{
+	unsigned int i;
+	unsigned int match = 0U;
+
+	if (type_guid == NULL) {
+		return NULL;
+	}
+
+	for (i = 0U; i < list.entry_count; i++) {
+		if (guidcmp(type_guid, &list.list[i].type_guid) == 0) {
+			if (match == index) {
+				return &list.list[i];
+			}
+			match++;
 		}
 	}
 
