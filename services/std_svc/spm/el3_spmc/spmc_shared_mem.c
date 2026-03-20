@@ -1588,11 +1588,17 @@ spmc_ffa_mem_retrieve_req(uint32_t smc_fid,
 		goto err_unlock_mailbox;
 	}
 
-	/* req->emad_count is not set for retrieve by hypervisor */
+	/*
+	 * Validate emad_count based on caller origin:
+	 *
+	 * - Hypervisor retrieve requests do not include endpoint memory
+	 *   access descriptors.
+	 * - Secure partition retrieve requests must include them.
+	 */
 	if ((secure_origin && req->emad_count == 0U) ||
 	    (!secure_origin && req->emad_count != 0U)) {
 		WARN("%s: unsupported attribute desc count %u.\n",
-		     __func__, obj->desc.emad_count);
+		     __func__, req->emad_count);
 		ret = FFA_ERROR_INVALID_PARAMETER;
 		goto err_unlock_mailbox;
 	}
