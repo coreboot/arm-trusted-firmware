@@ -71,7 +71,7 @@ void plat_secondary_cpus_bl31_entry(void);
 
 void setup_clusterectlr_el1(void);
 
-int socfpga_memcpy_s(void *dst, size_t dsize, void *src, size_t ssize);
+int socfpga_memcpy_s(void *dst, size_t dsize, const void *src, size_t ssize);
 
 /******************************************************************************
  * Macro for generic poling function

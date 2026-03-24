@@ -53,9 +53,9 @@ uint32_t socfpga_get_spsr_for_bl33_entry(void)
 }
 
 // common/lib/libc/socfpga_memcpy_s.c
-int socfpga_memcpy_s(void *dst, size_t dsize, void *src, size_t ssize)
+int socfpga_memcpy_s(void *dst, size_t dsize, const void *src, size_t ssize)
 {
-	unsigned int *s = (unsigned int *)src;
+	const unsigned int *s = (const unsigned int *)src;
 	unsigned int *d = (unsigned int *)dst;
 
 	if (!dst || !src)
