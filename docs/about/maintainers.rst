@@ -886,10 +886,7 @@ QTI MSM8916 platform port
 :|M|: Nikita Travkin <nikita@trvn.ru>
 :|G|: `TravMurav`_
 :|F|: docs/plat/qti/msm8916.rst
-:|F|: plat/qti/mdm9607/
-:|F|: plat/qti/msm8909/
-:|F|: plat/qti/msm8916/
-:|F|: plat/qti/msm8939/
+:|F|: plat/qti/bear/
 
 Raspberry Pi 3 platform port
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^

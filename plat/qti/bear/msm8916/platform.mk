@@ -12,24 +12,24 @@ PLAT_BL_COMMON_SOURCES	:=	${GICV2_SOURCES}				\
 				drivers/delay_timer/delay_timer.c		\
 				drivers/delay_timer/generic_delay_timer.c	\
 				plat/common/plat_gicv2.c			\
-				plat/qti/msm8916/msm8916_gicv2.c		\
-				plat/qti/msm8916/msm8916_setup.c		\
-				plat/qti/msm8916/${ARCH}/msm8916_helpers.S	\
-				plat/qti/msm8916/${ARCH}/uartdm_console.S
+				plat/qti/bear/msm8916/msm8916_gicv2.c		\
+				plat/qti/bear/msm8916/msm8916_setup.c		\
+				plat/qti/bear/msm8916/${ARCH}/msm8916_helpers.S	\
+				plat/qti/bear/msm8916/${ARCH}/uartdm_console.S
 
 MSM8916_CPU		:=	$(if ${ARM_CORTEX_A7},cortex_a7,cortex_a53)
 MSM8916_PM_SOURCES	:=	drivers/arm/cci/cci.c				\
 				lib/cpus/${ARCH}/${MSM8916_CPU}.S		\
 				plat/common/plat_psci_common.c			\
-				plat/qti/msm8916/msm8916_config.c		\
-				plat/qti/msm8916/msm8916_cpu_boot.c		\
-				plat/qti/msm8916/msm8916_pm.c			\
-				plat/qti/msm8916/msm8916_topology.c
+				plat/qti/bear/msm8916/msm8916_config.c		\
+				plat/qti/bear/msm8916/msm8916_cpu_boot.c	\
+				plat/qti/bear/msm8916/msm8916_pm.c		\
+				plat/qti/bear/msm8916/msm8916_topology.c
 
 BL31_SOURCES		+=	${MSM8916_PM_SOURCES}				\
-				plat/qti/msm8916/msm8916_bl31_setup.c
+				plat/qti/bear/msm8916/msm8916_bl31_setup.c
 
-PLAT_INCLUDES		:=	-Iplat/qti/msm8916/include
+PLAT_INCLUDES		:=	-Iplat/qti/bear/msm8916/include
 
 ifeq (${ARCH},aarch64)
 # arm_macros.S exists only on aarch64 currently

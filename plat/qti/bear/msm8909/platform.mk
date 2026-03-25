@@ -10,4 +10,4 @@ ARM_CORTEX_A7	:= yes
 BL31_BASE	?= 0x87e80000
 QTI_UART_NUM	?= 1
 
-include plat/qti/msm8916/platform.mk
+include plat/qti/bear/msm8916/platform.mk

@@ -4,4 +4,4 @@
 # SPDX-License-Identifier: BSD-3-Clause
 #
 
-include plat/qti/msm8916/sp_min/sp_min-msm8916.mk
+include plat/qti/bear/msm8916/sp_min/sp_min-msm8916.mk

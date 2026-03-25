@@ -4,5 +4,4 @@
 # SPDX-License-Identifier: BSD-3-Clause
 #
 
-BL32_SOURCES	+=	plat/common/${ARCH}/platform_mp_stack.S		\
-			plat/qti/msm8916/tsp/msm8916_tsp_setup.c
+include plat/qti/bear/msm8916/tsp/tsp-msm8916.mk

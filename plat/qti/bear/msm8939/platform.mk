@@ -8,4 +8,4 @@
 # enabled before the CPUs in both clusters become cache-coherent.
 override WARMBOOT_ENABLE_DCACHE_EARLY := 0
 
-include plat/qti/msm8916/platform.mk
+include plat/qti/bear/msm8916/platform.mk
