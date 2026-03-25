@@ -17,6 +17,7 @@
 #include <lib/el3_runtime/context_mgmt.h>
 #include <lib/mmio.h>
 #include <lib/xlat_tables/xlat_tables_v2.h>
+#include <plat/arm/common/plat_arm.h>
 #include <plat/common/platform.h>
 
 #include <imx8_lpuart.h>
@@ -28,6 +29,11 @@
 	MAP_REGION_FLAT(BL31_BASE, BL31_SIZE, MT_MEMORY | MT_RW | MT_SECURE)
 #define MAP_BL31_RO										   \
 	MAP_REGION_FLAT(BL_CODE_BASE, BL_CODE_END - BL_CODE_BASE, MT_MEMORY | MT_RO | MT_SECURE)
+
+static const uintptr_t gicr_base_addrs[] = {
+	PLAT_ARM_GICR_BASE,
+	0U
+};
 
 static const mmap_region_t imx_mmap[] = {
 	AIPS1_MAP, AIPS2_MAP, AIPS4_MAP, GIC_MAP,
@@ -131,14 +137,17 @@ void bl31_plat_arch_setup(void)
 
 	/* trdc must be initialized */
 	trdc_config();
+
+	gic_set_gicr_frames(gicr_base_addrs);
+}
+
+void plat_gic_pre_pcpu_init(unsigned int cpu_idx)
+{
 }
 
 void bl31_platform_setup(void)
 {
 	generic_delay_timer_init();
-
-	plat_gic_driver_init();
-	plat_gic_init();
 }
 
 entry_point_info_t *bl31_plat_get_next_image_ep_info(unsigned int type)

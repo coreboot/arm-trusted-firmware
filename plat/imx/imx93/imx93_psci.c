@@ -98,9 +98,6 @@ void imx_pwr_domain_on_finish(const psci_power_state_t *target_state)
 	uint64_t mpidr = read_mpidr_el1();
 	unsigned int core_id = MPIDR_AFFLVL1_VAL(mpidr);
 
-	plat_gic_pcpu_init();
-	plat_gic_cpuif_enable();
-
 	/* below config is ok both for boot & hotplug */
 	/* clear the CPU power mode */
 	gpc_set_cpu_mode(CPU_A55C0 + core_id, CM_MODE_RUN);
@@ -128,7 +125,6 @@ void imx_pwr_domain_off(const psci_power_state_t *target_state)
 	unsigned int core_id = MPIDR_AFFLVL1_VAL(mpidr);
 	unsigned int i;
 
-	plat_gic_cpuif_disable();
 	write_clusterpwrdn(DSU_CLUSTER_PWR_OFF);
 
 	/*
@@ -151,7 +147,6 @@ void imx_pwr_domain_suspend(const psci_power_state_t *target_state)
 
 	/* do cpu level config */
 	if (is_local_state_off(CORE_PWR_STATE(target_state))) {
-		plat_gic_cpuif_disable();
 		imx_set_cpu_boot_entry(core_id, secure_entrypoint);
 		/* config the target mode to WAIT */
 		gpc_set_cpu_mode(CPU_A55C0 + core_id, CM_MODE_WAIT);
@@ -184,7 +179,6 @@ void imx_pwr_domain_suspend_finish(const psci_power_state_t *target_state)
 	if (is_local_state_off(CORE_PWR_STATE(target_state))) {
 		/* set A55 CORE's power mode to RUN */
 		gpc_set_cpu_mode(CPU_A55C0 + core_id, CM_MODE_RUN);
-		plat_gic_cpuif_enable();
 	}
 }
 
