@@ -106,16 +106,8 @@ void idte3_init_cached_idregs_per_world(size_t security_state)
 	update_feat_hacdbs_idreg_field(security_state);
 }
 
-int handle_idreg_trap(uint64_t esr_el3, cpu_context_t *ctx, u_register_t flags)
+int handle_idreg_trap(uint8_t rt, uint64_t esr_el3, cpu_context_t *ctx, u_register_t flags)
 {
-	uint32_t iss = (uint32_t) ESR_ELx_ISS(esr_el3);
-	uint8_t rt = (uint8_t) ISS_SYS64_RT(iss);
-	uint8_t op0 = (uint8_t) ISS_SYS64_OP0(iss);
-	uint8_t op1 = (uint8_t) ISS_SYS64_OP1(iss);
-	uint8_t CRn = (uint8_t) ISS_SYS64_CRN(iss);
-	uint8_t CRm = (uint8_t) ISS_SYS64_CRM(iss);
-	uint8_t op2 = (uint8_t) ISS_SYS64_OP2(iss);
-
 	u_register_t idreg = esr_el3 & ESR_EL3_SYSREG_MASK;
 
 	u_register_t value = 0ULL;
@@ -271,7 +263,11 @@ int handle_idreg_trap(uint64_t esr_el3, cpu_context_t *ctx, u_register_t flags)
 	 */
 	default:
 		WARN("Unknown ID register: S%u_%u_C%u_C%u_%u is trapped\n",
-			op0, op1, CRn, CRm, op2);
+		     (uint8_t) EXTRACT(ISS_SYS64_OP0, esr_el3),
+		     (uint8_t) EXTRACT(ISS_SYS64_OP1, esr_el3),
+		     (uint8_t) EXTRACT(ISS_SYS64_CRN, esr_el3),
+		     (uint8_t) EXTRACT(ISS_SYS64_CRM, esr_el3),
+		     (uint8_t) EXTRACT(ISS_SYS64_OP2, esr_el3));
 		value = 0UL;
 	}
 

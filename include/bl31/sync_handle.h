@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, ARM Limited. All rights reserved.
+ * Copyright (c) 2022-2026, Arm Limited. All rights reserved.
  * Copyright (c) 2023, NVIDIA Corporation. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
@@ -11,31 +11,11 @@
 #include <stdbool.h>
 #include <context.h>
 
-#define ISS_SYSREG_OPCODE_MASK		0x3ffc1eUL
-#define ISS_IDREG_OPCODE_MASK		0x31bc00UL
-#define ISS_SYSREG_REG_MASK		0x0003e0UL
-#define ISS_SYSREG_REG_SHIFT		5U
-#define ISS_SYSREG_DIRECTION_MASK	0x000001UL
-
-#define ISS_SYSREG_OPCODE_RNDR		0x30c808U
-#define ISS_SYSREG_OPCODE_IMPDEF	0x303c00U
-#define ISS_SYSREG_OPCODE_RNDRRS	0x32c808U
-#define ISS_SYSREG_OPCODE_IDREG		0x300000U
-
 #define TRAP_RET_UNHANDLED		-1
 #define TRAP_RET_REPEAT			0
 #define TRAP_RET_CONTINUE		1
 
-#ifndef __ASSEMBLER__
-static inline unsigned int get_sysreg_iss_rt(uint64_t esr)
-{
-	return (esr & ISS_SYSREG_REG_MASK) >> ISS_SYSREG_REG_SHIFT;
-}
-
-static inline bool is_sysreg_iss_write(uint64_t esr)
-{
-	return !(esr & ISS_SYSREG_DIRECTION_MASK);
-}
+#define XZR_REG_NUM   31
 
 /**
  * handle_sysreg_trap() - Handle AArch64 system register traps from lower ELs
@@ -55,8 +35,7 @@ static inline bool is_sysreg_iss_write(uint64_t esr)
  *   TRAP_RET_CONTINUE(1): trap was handled, return to the next instruction
  *		           (continuing after it)
  */
-int handle_sysreg_trap(uint64_t esr_el3, cpu_context_t *ctx,
-			u_register_t flags __unused);
+int handle_sysreg_trap(uint64_t esr_el3, cpu_context_t *ctx, u_register_t flags);
 
 /* Handler for injecting UNDEF exception to lower EL */
 void inject_undef64(cpu_context_t *ctx);
@@ -65,8 +44,13 @@ u_register_t create_spsr(u_register_t old_spsr, unsigned int target_el);
 
 /* Prototypes for system register emulation handlers provided by platforms. */
 int plat_handle_impdef_trap(uint64_t esr_el3, cpu_context_t *ctx);
-int plat_handle_rng_trap(uint64_t esr_el3, cpu_context_t *ctx);
-
-#endif /* __ASSEMBLER__ */
+#if ENABLE_FEAT_RNG_TRAP
+int plat_handle_rng_trap(uint8_t rt, bool rndrrs, cpu_context_t *ctx);
+#else
+static inline int plat_handle_rng_trap(uint8_t rt, bool rndrrs, cpu_context_t *ctx)
+{
+	return TRAP_RET_UNHANDLED;
+}
+#endif
 
 #endif

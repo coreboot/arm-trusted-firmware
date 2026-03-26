@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025, Arm Limited. All rights reserved.
+ * Copyright (c) 2025-2026, Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -8,65 +8,10 @@
 #define IDTE3_H
 
 #ifdef IMAGE_BL31
+#include <arch.h>
 #include <bl31/sync_handle.h>
 #include <context.h>
 #include <lib/el3_runtime/cpu_data.h>
-#define ESR_ELx_ISS(esr)          ((esr) & 0x01ffffff)
-
-/* ISS layout for trapped AArch64 system-register access (ESR_EL3.ISS)
- *
- *  [21:20]  Op0
- *  [19:17]  Op2
- *  [16:14]  Op1
- *  [13:10]  CRn
- *  [9:5]    Rt
- *  [4:1]    CRm
- *  [0]      DIR
- */
-#define ISS_SYS64_OP0_SHIFT       U(20)
-#define ISS_SYS64_OP2_SHIFT       U(17)
-#define ISS_SYS64_OP1_SHIFT       U(14)
-#define ISS_SYS64_CRN_SHIFT       U(10)
-#define ISS_SYS64_RT_SHIFT        U(5)
-#define ISS_SYS64_CRM_SHIFT       U(1)
-#define ISS_SYS64_DIR_SHIFT       U(0)
-
-#define ISS_SYS64_OP0_MASK        U(0x3)
-#define ISS_SYS64_OP1_MASK        U(0x7)
-#define ISS_SYS64_OP2_MASK        U(0x7)
-#define ISS_SYS64_CRN_MASK        U(0xf)
-#define ISS_SYS64_RT_MASK         ULL(0x1f)
-#define ISS_SYS64_CRM_MASK        U(0xf)
-#define ISS_SYS64_DIR_MASK        U(0x1)
-
-/* Field extractors */
-#define ISS_SYS64_OP0(iss)        (((iss) >> ISS_SYS64_OP0_SHIFT) & \
-		ISS_SYS64_OP0_MASK)
-
-#define ISS_SYS64_OP1(iss)        (((iss) >> ISS_SYS64_OP1_SHIFT) & \
-		ISS_SYS64_OP1_MASK)
-
-#define ISS_SYS64_OP2(iss)        (((iss) >> ISS_SYS64_OP2_SHIFT) & \
-		ISS_SYS64_OP2_MASK)
-
-#define ISS_SYS64_CRN(iss)        (((iss) >> ISS_SYS64_CRN_SHIFT) & \
-		ISS_SYS64_CRN_MASK)
-
-#define ISS_SYS64_RT(iss)         (((iss) >> ISS_SYS64_RT_SHIFT)  & \
-		ISS_SYS64_RT_MASK)
-
-#define ISS_SYS64_CRM(iss)        (((iss) >> ISS_SYS64_CRM_SHIFT) & \
-		ISS_SYS64_CRM_MASK)
-
-#define ISS_SYS64_DIR(iss)        (((iss) >> ISS_SYS64_DIR_SHIFT) & \
-		ISS_SYS64_DIR_MASK)
-
-#define SYSREG_ESR(op0, op1, crn, crm, op2) \
-		((UL(op0) << ISS_SYS64_OP0_SHIFT) | \
-		 (UL(op1) << ISS_SYS64_OP1_SHIFT) | \
-		 (UL(crn) << ISS_SYS64_CRN_SHIFT) | \
-		 (UL(crm) << ISS_SYS64_CRM_SHIFT) | \
-		 (UL(op2) << ISS_SYS64_OP2_SHIFT))
 
 #define ESR_EL3_SYSREG_MASK SYSREG_ESR(3, 7, 15, 15, 7)
 
@@ -124,16 +69,16 @@
 
 #if ENABLE_FEAT_IDTE3
 void idte3_enable(cpu_context_t *ctx);
-int handle_idreg_trap(uint64_t esr_el3, cpu_context_t *ctx,
-				u_register_t flags);
+int handle_idreg_trap(uint8_t rt, uint64_t esr_el3, cpu_context_t *ctx,
+		      u_register_t flags);
 void idte3_init_cached_idregs_per_world(size_t security_state);
 void idte3_init_percpu_once_regs(size_t security_state);
 #else
 static inline void idte3_enable(cpu_context_t *ctx)
 {
 }
-static inline int handle_idreg_trap(uint64_t esr_el3, cpu_context_t *ctx,
-							u_register_t flags)
+static inline int handle_idreg_trap(uint8_t rt, uint64_t esr_el3,
+				    cpu_context_t *ctx, u_register_t flags)
 {
 	return TRAP_RET_UNHANDLED;
 }
