@@ -36,6 +36,7 @@ MBEDTLS_SOURCES	+=		drivers/auth/mbedtls/mbedtls_common.c
 
 LIBMBEDTLS_SRCS		+= $(addprefix ${MBEDTLS_DIR}/library/,		\
 					aes.c 				\
+					aesce.c				\
 					asn1parse.c 			\
 					asn1write.c 			\
 					cipher.c 			\

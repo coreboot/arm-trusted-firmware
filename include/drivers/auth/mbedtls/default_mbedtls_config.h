@@ -80,25 +80,25 @@
 
 /* Enable hash algorithms based on TBB or Measured Boot */
 #if MEASURED_BOOT || (TF_MBEDTLS_HASH_ALG_ID == TF_MBEDTLS_SHA256)
-    #define MBEDTLS_SHA256_C
-    #if (ENABLE_FEAT_CRYPTO == 1)
-    #define MBEDTLS_SHA256_USE_ARMV8_A_CRYPTO_ONLY
-    #endif
+	#define MBEDTLS_SHA256_C
+	#if (ENABLE_FEAT_CRYPTO == 1)
+		#define MBEDTLS_SHA256_USE_ARMV8_A_CRYPTO_ONLY
+	#endif
 #endif
 
 #if MEASURED_BOOT || (TF_MBEDTLS_HASH_ALG_ID == TF_MBEDTLS_SHA384)
-    #define MBEDTLS_SHA384_C
-    #if (ENABLE_FEAT_CRYPTO_SHA3 == 1)
-    #define MBEDTLS_SHA512_C
-    #define MBEDTLS_SHA512_USE_A64_CRYPTO_ONLY
-    #endif
+	#define MBEDTLS_SHA384_C
+	#if (ENABLE_FEAT_CRYPTO_SHA3 == 1)
+		#define MBEDTLS_SHA512_C
+		#define MBEDTLS_SHA512_USE_A64_CRYPTO_ONLY
+	#endif
 #endif
 
 #if MEASURED_BOOT || (TF_MBEDTLS_HASH_ALG_ID == TF_MBEDTLS_SHA512)
-    #define MBEDTLS_SHA512_C
-    #if (ENABLE_FEAT_CRYPTO_SHA3 == 1)
-    #define MBEDTLS_SHA512_USE_A64_CRYPTO_ONLY
-    #endif
+	#define MBEDTLS_SHA512_C
+	#if (ENABLE_FEAT_CRYPTO_SHA3 == 1)
+		#define MBEDTLS_SHA512_USE_A64_CRYPTO_ONLY
+	#endif
 #endif
 
 #define MBEDTLS_VERSION_C
@@ -107,6 +107,14 @@
 #define MBEDTLS_X509_CRT_PARSE_C
 
 #if TF_MBEDTLS_USE_AES_GCM
+#if (ENABLE_FEAT_CRYPTO == 1)
+    #define MBEDTLS_AESCE_C
+    /*
+     * only use the CPU-accelerated AES backend; do not keep the
+     * portable plain-C AES path around
+     */
+    #define MBEDTLS_AES_USE_HARDWARE_ONLY
+#endif /* ENABLE_FEAT_CRYPTO */
 #define MBEDTLS_AES_C
 #define MBEDTLS_CIPHER_C
 #define MBEDTLS_GCM_C
