@@ -110,3 +110,4 @@ PLAT_EXTRA_LD_SCRIPT	:=	1
 
 # Do not enable SVE
 ENABLE_SVE_FOR_NS	:=	0
+$(eval $(call add_define,PLAT_RK_CPU_RESET_EARLY))

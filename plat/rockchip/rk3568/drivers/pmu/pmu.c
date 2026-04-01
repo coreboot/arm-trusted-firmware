@@ -32,6 +32,9 @@ DECLARE_BAKERY_LOCK(rockchip_pd_lock);
 static uint32_t grf_ddr_con3;
 static struct psram_data_t *psram_sleep_cfg =
 	(struct psram_data_t *)&sys_sleep_flag_sram;
+static uint64_t boot_cpu_save[4];
+/* define in .data section */
+static uint32_t need_en_crypto = 1;
 
 /*
  * These are wrapper macros to the powe domain Bakery Lock API.
@@ -498,6 +501,66 @@ static void nonboot_cpus_off(void)
 	do {
 		tmp = mmio_read_32(PMU_BASE + PMU_CLUSTER_PWR_ST);
 	} while ((tmp & 0xe) != 0xe);
+}
+
+void rockchip_cpu_reset_early(u_register_t arg0, u_register_t arg1,
+			      u_register_t arg2, u_register_t arg3)
+{
+	if (need_en_crypto == 0)
+		 return;
+
+	/* check the crypto function had been enabled or not */
+	if ((mmio_read_32(PMUSGRF_BASE + PMUSGRF_SOC_CON(1)) & BIT(9)) != 0) {
+		/* save x0~x3 */
+		boot_cpu_save[0] = arg0;
+		boot_cpu_save[1] = arg1;
+		boot_cpu_save[2] = arg2;
+		boot_cpu_save[3] = arg3;
+
+		/* enable the crypto function */
+		mmio_write_32(PMUSGRF_BASE + PMUSGRF_SOC_CON(1), WMSK_BIT(9));
+
+		/*
+		 * remap
+		 * 2'b00: Boot from boot-rom.
+		 * 2'b01: Boot from pmu mem.
+		 * 2'b10: Boot from sys mem.
+		 */
+		mmio_write_32(PMUSGRF_BASE + PMUSGRF_SOC_CON(1), 0x18000800);
+		psram_sleep_cfg->pm_flag = PM_WARM_BOOT_BIT;
+		cpuson_flags[0] = PMU_CPU_HOTPLUG;
+		cpuson_entry_point[0] = (uintptr_t)BL31_BASE;
+		dsb();
+
+		/* Must reset core0 to enable the crypto function.
+		 * Core0 will boot from pmu_sram and jump to BL31_BASE.
+		 */
+		write_rmr_el3(RMR_EL3_RR_BIT | RMR_EL3_AA64_BIT);
+		while (1) {
+			isb();
+			wfi();
+		}
+	} else {
+		need_en_crypto = 0;
+
+		/*
+		 * remap
+		 * 2'b00: Boot from boot-rom.
+		 * 2'b01: Boot from pmu mem.
+		 * 2'b10: Boot from sys mem.
+		 */
+		mmio_write_32(PMUSGRF_BASE + PMUSGRF_SOC_CON(1), 0x18000000);
+
+		/*
+		 * the crypto function has been enabled,
+		 * restore the x0~x3.
+		 */
+		__asm__ volatile ("ldr	x20, [%0]\n"
+				  "ldr	x21, [%0, 0x8]\n"
+				  "ldr	x22, [%0, 0x10]\n"
+				  "ldr	x23, [%0, 0x18]\n"
+				  : : "r" (&boot_cpu_save[0]));
+	}
 }
 
 void plat_rockchip_pmu_init(void)
