@@ -12,8 +12,8 @@
 #define MAX_IO_DEVICES			U(2)
 #define MAX_IO_BLOCK_DEVICES		U(1)
 
-#define BL2_BASE			0x14680000
-#define BL2_SIZE			0x80000
+#define BL2_BASE			0x1c00e000
+#define BL2_SIZE			0x100000
 #define BL2_LIMIT			(BL2_BASE + BL2_SIZE)
 
 #define BL31_BASE			0x1c200000
