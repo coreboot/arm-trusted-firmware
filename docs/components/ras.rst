@@ -11,7 +11,7 @@ Reference Manual and `RAS Supplement`_. The rest of this document assumes
 familiarity with architecture and terminology.
 
 **IMPORTANT NOTE**: TF-A implementation assumes that if RAS extension is present
-then FEAT_IESB is also implmented.
+then FEAT_IESB is also implemented.
 
 There are two philosophies for handling RAS errors from Non-secure world point
 of view.

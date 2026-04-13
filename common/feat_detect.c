@@ -106,6 +106,12 @@ static unsigned int read_feat_ras_id_field(void)
 			     ID_AA64PFR0_RAS_MASK);
 }
 
+static unsigned int read_feat_iesb_id_field(void)
+{
+	return ISOLATE_FIELD(read_id_aa64mmfr2_el1(), ID_AA64MMFR2_EL1_IESB_SHIFT,
+			     ID_AA64MMFR2_EL1_IESB_MASK);
+}
+
 static unsigned int read_feat_dit_id_field(void)
 {
 	return ISOLATE_FIELD(read_id_aa64pfr0_el1(), ID_AA64PFR0_DIT_SHIFT,
@@ -422,6 +428,9 @@ void detect_arch_features(unsigned int core_pos)
 				 "SVE", 1, 3);
 	tainted |= check_feature(ENABLE_FEAT_RAS, read_feat_ras_id_field(),
 				 "RAS", 1, 3);
+	/* FEAT_RAS's enablement hinges on FEAT_IESB also being present */
+	tainted |= check_feature(ENABLE_FEAT_RAS, read_feat_iesb_id_field(),
+				 "IESB", 1, 2);
 
 	/* v8.3 features */
 	/* the PAuth fields are very complicated, no min/max is checked */
