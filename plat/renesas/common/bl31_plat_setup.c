@@ -145,7 +145,19 @@ const spd_pm_ops_t rcar_pm = {
 	.svc_migrate_info = rcar_svc_migrate_info,
 };
 
+#ifdef SPD_opteed
+extern const spd_pm_ops_t opteed_pm;
+static spd_pm_ops_t rcar_opteed_pm;
+
+void bl31_plat_runtime_setup(void)
+{
+	memcpy(&rcar_opteed_pm, &opteed_pm, sizeof(rcar_opteed_pm));
+	rcar_opteed_pm.svc_migrate_info = rcar_svc_migrate_info;
+	psci_register_spd_pm_hook(&rcar_opteed_pm);
+}
+#else
 void bl31_plat_runtime_setup(void)
 {
 	psci_register_spd_pm_hook(&rcar_pm);
 }
+#endif
