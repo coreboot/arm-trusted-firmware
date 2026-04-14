@@ -388,3 +388,16 @@ void bl31_plat_runtime_setup(void)
 	console_flush();
 	console_switch_state(CONSOLE_FLAG_RUNTIME);
 }
+
+void bl31_plat_enable_mmu(uint32_t flags)
+{
+	/*
+	 * There's a crash on QEMU when initializing SVE in BL31 if FP
+	 * traps is enabled in EL3. So disable it until we have permenant
+	 * fix for the QEMU platform.
+	 */
+	disable_fpregs_traps_el3();
+
+	enable_mmu_direct_el3(flags);
+}
+
