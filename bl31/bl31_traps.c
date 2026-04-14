@@ -23,7 +23,7 @@ int handle_sysreg_trap(uint64_t esr_el3, cpu_context_t *ctx, u_register_t flags)
 	    ((opcode >= ISS_SYSREG_OPCODE_IDREG_MIN &&
 	      opcode <= ISS_SYSREG_OPCODE_IDREG_MAX) ||
 	      opcode == ISS_SYSREG_OPCODE_GMID_EL1)) {
-		return handle_idreg_trap(rt, esr_el3, ctx, flags);
+		return handle_idreg_trap(rt, opcode, ctx, flags);
 	}
 
 	if (is_feat_rng_trap_supported() &&
