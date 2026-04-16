@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2025, Arm Limited and Contributors. All rights reserved.
+ * Copyright (c) 2014-2026, Arm Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -228,7 +228,7 @@
 #elif MEASURED_BOOT && SPMC_AT_EL3
 # define PLAT_ARM_MAX_BL2_SIZE	(UL(0x15000) - JUNO_BL2_ROMLIB_OPTIMIZATION)
 #else
-# define PLAT_ARM_MAX_BL2_SIZE	(UL(0x13000) - JUNO_BL2_ROMLIB_OPTIMIZATION)
+# define PLAT_ARM_MAX_BL2_SIZE	(UL(0x14000) - JUNO_BL2_ROMLIB_OPTIMIZATION)
 #endif
 
 /*
