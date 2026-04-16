@@ -238,9 +238,9 @@ const mmap_region_t *plat_get_addr_mmap(void)
 	return plat_arm_mmap;
 }
 
-#if ENABLE_FEAT_RME
 void arm_gpt_setup(void)
 {
+#if ENABLE_FEAT_RME
 	/*
 	 * It is to be noted that any Arm platform that reuses arm_gpt_setup
 	 * must implement plat_arm_get_gpt_info within its platform code
@@ -275,5 +275,5 @@ void arm_gpt_setup(void)
 		ERROR("gpt_enable() failed!\n");
 		panic();
 	}
-}
 #endif /* ENABLE_FEAT_RME */
+}
