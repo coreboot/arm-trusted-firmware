@@ -111,6 +111,9 @@ ifeq (${ENABLE_RMM},1)
     RMMD_ENABLE_IDE_KEY_PROG	:= 1
 endif
 
+# always check that hardware matches the codebase's expectations
+FEATURE_DETECTION		:= 1
+
 # The FVP platform depends on this macro to build with correct GIC driver.
 $(eval $(call add_define,FVP_USE_GIC_DRIVER))
 

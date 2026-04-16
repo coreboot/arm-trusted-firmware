@@ -255,10 +255,6 @@ endif
 
 endif # ${ENABLE_FEAT_PAUTH_LR}
 
-ifeq ($(FEATURE_DETECTION),1)
-        $(info FEATURE_DETECTION is an experimental feature)
-endif #(FEATURE_DETECTION)
-
 ifeq ($(FIRME_SUPPORT),1)
         $(info FIRME_SUPPORT is an experimental feature)
 endif #(FIRME_SUPPORT)

@@ -290,6 +290,17 @@ Common build options
    builds, but this behaviour can be overridden in each platform's Makefile or
    in the build command line.
 
+-  ``FEATURE_DETECTION``: Boolean option to enable the architectural features
+   verification mechanism. This is a debug feature that compares the
+   architectural features enabled through the feature specific build flags
+   (ENABLE_FEAT_xxx) with the features actually available on the CPU running,
+   and reports any discrepancies.
+
+   It is expected that this feature is only used for flexible platforms like
+   software emulators, or for hardware platforms at bringup time, to verify
+   that the configured feature set matches the CPU.
+   Default value is ``0``.
+
 -  ``ENABLE_FEAT_AMU``: Numeric value to enable Activity Monitor Unit
    extensions. This flag can take the values 0 to 2, to align with the
    ``ENABLE_FEAT`` mechanism. This is an optional architectural feature
@@ -1625,18 +1636,6 @@ Common build options
    for logical partitions in EL3, managed by the SPMD as defined in the
    FF-A v1.2 specification. This flag is disabled by default. This flag
    must not be used if ``SPMC_AT_EL3`` is enabled.
-
--  ``FEATURE_DETECTION``: Boolean option to enable the architectural features
-   verification mechanism. This is a debug feature that compares the
-   architectural features enabled through the feature specific build flags
-   (ENABLE_FEAT_xxx) with the features actually available on the CPU running,
-   and reports any discrepancies.
-   This flag will also enable errata ordering checking for ``DEBUG`` builds.
-
-   It is expected that this feature is only used for flexible platforms like
-   software emulators, or for hardware platforms at bringup time, to verify
-   that the configured feature set matches the CPU.
-   The ``FEATURE_DETECTION`` macro is disabled by default.
 
 -  ``PSA_CRYPTO``: Boolean option for enabling MbedTLS PSA crypto APIs support.
    The platform will use PSA compliant Crypto APIs during authentication and
