@@ -42,6 +42,7 @@ static uint32_t casa_32(uint32_t src, volatile uint32_t *dst)
 	__asm__ volatile (
 	".arch_extension lse\n"
 	"	casa	%w[ret], %w[src], %[dst]\n"
+	".arch_extension nolse\n"
 	: [dst] "+Q" (*dst), [ret] "+r" (ret)
 	: [src] "r" (src));
 
@@ -123,6 +124,7 @@ static bool spin_trylock_atomic(volatile uint32_t *dst)
 	".arch_extension lse\n"
 	"casa	%w[tmp], %w[src], %[dst]\n"
 	"eor	%w[out], %w[tmp], #1\n" /* convert the result to bool */
+	".arch_extension nolse\n"
 	: [dst] "+Q" (*dst), [tmp] "+r" (tmp), [out] "=r" (out)
 	: [src] "r" (1));
 
@@ -178,6 +180,7 @@ void bit_lock(bitlock_t *lock, uint8_t mask)
 	assert(is_feat_lse_supported());
 
 	__asm__ volatile (
+	".arch_extension lse\n"
 	"1:	ldsetab	%w[mask], %w[tmp], %[dst]\n"
 	"	tst	%w[tmp], %w[mask]\n"
 	"	b.eq	2f\n"
@@ -187,6 +190,7 @@ void bit_lock(bitlock_t *lock, uint8_t mask)
 	"	wfe\n"
 	"	b	1b\n"
 	"2:\n"
+	".arch_extension nolse\n"
 	: [dst] "+Q" (*dst), [tmp] "=&r" (tmp)
 	: [mask] "r" (mask));
 }
@@ -204,7 +208,9 @@ void bit_unlock(bitlock_t *lock, uint8_t mask)
 	assert(is_feat_lse_supported());
 
 	__asm__ volatile (
-	"stclrlb	%w[mask], %[dst]"
+	".arch_extension lse\n"
+	"stclrlb	%w[mask], %[dst]\n"
+	".arch_extension nolse\n"
 	: [dst] "+Q" (*dst)
 	: [mask] "r" (mask));
 }
