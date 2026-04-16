@@ -57,6 +57,12 @@ Maintainers
 :|G|: `Yann-lms`_
 :|M|: Govindraj Raja <govindraj.raja@arm.com>
 :|G|: `govindraj-arm`_
+:|M|: Chris Kay <chris.kay@arm.com>
+:|G|: `CJKay`_
+:|M|: Boyan Karatotev <boyan.karatotev@arm.com>
+:|G|: `loosper-arm`_
+:|M|: Harrison Mutai <harrison.mutai@arm.com>
+:|G|: `harrisonmutai-arm`_
 
 .. _lts maintainers:
 
