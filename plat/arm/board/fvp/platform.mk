@@ -181,10 +181,10 @@ ENABLE_FEAT_GCIE	:=	1
 BL31_SOURCES		+=	plat/arm/board/fvp/fvp_gicv5.c
 FVP_DT_PREFIX		:=	fvp-base-gicv5-psci
 ifneq ($(SPD),none)
-        $(error Error: GICv5 is not compatible with SPDs)
+        $(error Error: SPD support for GICv5 is not implemented)
 endif
 ifeq ($(ENABLE_RMM),1)
-       $(error Error: GICv5 is not compatible with RME)
+       $(error Error: RME support for GICv5 is not implemented)
 endif
 else ifeq (${FVP_USE_GIC_DRIVER}, FVP_GICV2)
 USE_GIC_DRIVER		:=	2
