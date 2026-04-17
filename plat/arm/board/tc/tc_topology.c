@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2024, Arm Limited and Contributors. All rights reserved.
+ * Copyright (c) 2020-2026, Arm Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -12,6 +12,8 @@
  * The power domain tree descriptor.
  ******************************************************************************/
 const unsigned char tc_pd_tree_desc[] = {
+	/* No of root nodes */
+	ARM_SYSTEM_COUNT,
 	PLAT_ARM_CLUSTER_COUNT,
 	PLAT_MAX_CPUS_PER_CLUSTER,
 };

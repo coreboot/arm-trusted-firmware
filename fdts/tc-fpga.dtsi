@@ -29,11 +29,11 @@
 	reserved-memory {
 		phram {
 			/*
-			 * starting from base of DRAM2 reserve some memory
-			 * android image will be side loaded to this location
+			 * starting from base of DRAM2 reserve some memory,
+			 * the android/buildroot image will be side loaded to this location
 			 */
 			reg = <HI(TC_DRAM2_BASE) LO(TC_DRAM2_BASE)
-			       HI(ANDROID_FS_SIZE) LO(ANDROID_FS_SIZE)>;
+				HI(DRAM_FS_SIZE) LO(DRAM_FS_SIZE)>;
 			no-map;
 		};
 	};

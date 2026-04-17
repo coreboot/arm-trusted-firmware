@@ -97,6 +97,7 @@ $(eval $(call add_defines, \
 	TARGET_PLATFORM \
 	TARGET_FLAVOUR_$(call uppercase,${TARGET_FLAVOUR}) \
 	TC_RESOLUTION_$(call uppercase,${TC_RESOLUTION}) \
+	TC_TARGET_DISTRO_$(call uppercase,${TC_TARGET_DISTRO}) \
 	TC_DPU_USE_SCMI_CLK \
 	TC_SCMI_PD_CTRL_EN \
 	TC_FPGA_FS_IMG_IN_RAM \
@@ -149,6 +150,7 @@ BL1_SOURCES		+=	${INTERCONNECT_SOURCES}	\
 				${TC_CPU_SOURCES}	\
 				${TC_BASE}/tc_trusted_boot.c	\
 				${TC_BASE}/tc_bl1_setup.c \
+				${TC_BASE}/tc_security.c	\
 				${TC_BASE}/tc_err.c	\
 				drivers/arm/sbsa/sbsa.c
 
@@ -164,6 +166,7 @@ BL31_SOURCES		+=	${INTERCONNECT_SOURCES}	\
 				${TC_CPU_SOURCES}	\
 				${TC_BASE}/tc_bl31_setup.c	\
 				${TC_BASE}/tc_topology.c	\
+				${TC_BASE}/tc_security.c	\
 				lib/fconf/fconf.c			\
 				lib/fconf/fconf_dyn_cfg_getter.c	\
 				drivers/arm/dsu/dsu.c			\
