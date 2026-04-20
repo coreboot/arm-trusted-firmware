@@ -46,11 +46,11 @@
  * little space for growth.
  */
 #ifndef MEM_BASE
-# define BL31_BASE			U(0xBBF00000)
-# define BL31_LIMIT			U(0xBC000000)
+# define BL31_BASE			UL(0xBBF00000)
+# define BL31_LIMIT			UL(0xBC000000)
 #else
-# define BL31_BASE			U(MEM_BASE)
-# define BL31_LIMIT			U(MEM_BASE + MEM_SIZE)
+# define BL31_BASE			UL(MEM_BASE)
+# define BL31_LIMIT			UL(MEM_BASE + MEM_SIZE)
 # ifdef MEM_PROGBITS_SIZE
 #  define BL31_PROGBITS_LIMIT		U(MEM_BASE + \
 					  MEM_PROGBITS_SIZE)
