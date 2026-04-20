@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
+#include <string.h>
+
 #include <common/debug.h>
 #include <drivers/fwu/fwu_metadata.h>
 #include <drivers/io/io_driver.h>
@@ -13,11 +15,10 @@
 #include <drivers/io/io_storage.h>
 #include <drivers/partition/partition.h>
 #include <lib/utils.h>
-#include <string.h>
 
-#include <plat/arm/common/arm_gpt_partition_guid.h>
 #include <plat/arm/common/arm_fconf_getter.h>
 #include <plat/arm/common/arm_fconf_io_storage.h>
+#include <plat/arm/common/arm_gpt_partition_guid.h>
 #include <plat/arm/common/plat_arm.h>
 #include <plat/common/platform.h>
 #include <platform_def.h>
