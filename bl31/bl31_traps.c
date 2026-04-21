@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025, Arm Limited. All rights reserved.
+ * Copyright (c) 2022-2026, Arm Limited. All rights reserved.
  * Copyright (c) 2023, NVIDIA Corporation. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
@@ -102,15 +102,18 @@ static u_register_t get_elr_el3(u_register_t spsr_el3, u_register_t vbar, unsign
  * Explicitly create all bits of SPSR to get PSTATE at exception return.
  *
  * The code is based on "Aarch64.exceptions.takeexception" described in
- * DDI0602 revision 2025-03.
- * "https://developer.arm.com/documentation/ddi0597/2025-03/Shared-Pseudocode/
+ * DDI0602 revision 2026-03.
+ * "https://developer.arm.com/documentation/ddi0597/2026-03/Shared-Pseudocode/
  * aarch64-exceptions-takeexception"
  *
  * NOTE: This piece of code must be reviewed every release against the latest
  * takeexception sequence to ensure that we keep up with new arch features that
  * affect the PSTATE.
  *
- * TF-A 2.13 release review
+ * Next review: TF-A 2.16 release
+ *
+ * FEAT_NV3 has an impact but is not implemented in EL3 yet.
+ * TODO: this should create a BRBE exception record
  */
 u_register_t create_spsr(u_register_t old_spsr, unsigned int target_el)
 {
