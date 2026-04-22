@@ -7,8 +7,14 @@
 PLAT_PATH	:=	plat/ti/k3low
 TARGET_BOARD	?=	am62lx-evm
 
+# Force inline atomic operations instead of library calls
+TF_CFLAGS_aarch64 += -mno-outline-atomics
+
 include plat/ti/common/plat_common.mk
 include ${PLAT_PATH}/board/${TARGET_BOARD}/board.mk
+include drivers/ti/clk/ti_clk.mk
+include drivers/ti/pd/ti_pd.mk
+include ${PLAT_PATH}/common/pm/ti_soc_pm.mk
 
 BL32_BASE ?= 0x80200000
 $(eval $(call add_define,BL32_BASE))
