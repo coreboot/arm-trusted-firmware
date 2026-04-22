@@ -180,8 +180,8 @@ static int enc_file_read(io_entity_t *entity, uintptr_t buffer, size_t length,
 	VERBOSE("Encryption header looks OK.\n");
 	fw_enc_status = header.flags & FW_ENC_STATUS_FLAG_MASK;
 
-	if ((header.iv_len > ENC_MAX_IV_SIZE) ||
-	    (header.tag_len > ENC_MAX_TAG_SIZE)) {
+	if ((header.iv_len == 0U) || (header.iv_len > ENC_MAX_IV_SIZE) ||
+	    (header.tag_len == 0U) || (header.tag_len > ENC_MAX_TAG_SIZE)) {
 		WARN("Incorrect IV or tag length\n");
 		return -ENOENT;
 	}
