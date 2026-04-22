@@ -114,5 +114,18 @@ func plat_reset_handler
 	mov x30, x10
 #endif
 
+	/* -----------------------------------------------------
+	 * Enable DSU PMU EL1 write-access for MTK platform.
+	 * Bits [12:10]: CLUSTERPMUEN, SMEN, TSIDEN
+	 * -----------------------------------------------------
+	 */
+	mov x0, #0x1C00
+	mrs x1, actlr_el3
+	orr x1, x1, x0
+	msr actlr_el3, x1
+	mrs x1, actlr_el2
+	orr x1, x1, x0
+	msr actlr_el2, x1
+
 	ret
 endfunc plat_reset_handler
