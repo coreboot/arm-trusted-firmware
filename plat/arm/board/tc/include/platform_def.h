@@ -191,10 +191,10 @@
 /*
  * Since BL31 NOBITS overlays BL2 and BL1-RW, PLAT_ARM_MAX_BL31_SIZE is
  * calculated using the current BL31 PROGBITS debug size plus the sizes of
- * BL2 and BL1-RW. Current size is considering that TRUSTED_BOARD_BOOT and
- * MEASURED_BOOT is enabled.
+ * BL2 and BL1-RW. The chosen number fits the largest possible config:
+ * where TRUSTED_BOARD_BOOT, MEASURED_BOOT, and PLATFORM_TEST are all enabled.
  */
-#define PLAT_ARM_MAX_BL31_SIZE		0x60000
+#define PLAT_ARM_MAX_BL31_SIZE		0x61000
 
 /*
  * Size of cacheable stacks
