@@ -9,6 +9,10 @@
 
 #include <stdint.h>
 
+#ifdef QTI_XPU_BYPASS
 void qti_msm_xpu_bypass(void);
+#else
+static inline void qti_msm_xpu_bypass(void) {}
+#endif
 
 #endif /* QTI_XPU_H */

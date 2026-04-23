@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <common/debug.h>
 #include <drivers/qti/accesscontrol/xpu.h>
 #include <lib/mmio.h>
 
@@ -35,6 +36,8 @@ static uint32_t msm_xpu_cfg_count;
 
 void qti_msm_xpu_bypass(void)
 {
+	INFO("Bypassing QTI MSM XPU...\n");
+
 	for (int i = 0; i < msm_xpu_cfg_count; i++) {
 		struct xpuInstanceType *xpu = &msm_xpu_cfg[i];
 

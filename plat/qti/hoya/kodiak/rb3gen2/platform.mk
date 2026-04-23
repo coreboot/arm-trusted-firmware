@@ -33,10 +33,6 @@ GICV3_SUPPORT_GIC600			:=	1
 COLD_BOOT_SINGLE_CPU			:=	1
 PROGRAMMABLE_RESET_ADDRESS		:=	1
 
-# Enable XPU bypass
-QTI_MSM_XPU_BYPASS			:=	1
-$(eval $(call add_define,QTI_MSM_XPU_BYPASS))
-
 # Enable the dynamic translation tables library
 PLAT_XLAT_TABLES_DYNAMIC		:=	1
 $(eval $(call add_define,PLAT_XLAT_TABLES_DYNAMIC))
@@ -57,10 +53,6 @@ PLAT_INCLUDES		:=	-Iinclude/plat/common/					\
 				-I${PLAT_PATH}/hoya/qtiseclib/inc/${CHIPSET}
 
 include lib/xlat_tables_v2/xlat_tables.mk
-
-ifeq ($(QTI_MSM_XPU_BYPASS),1)
-PLAT_BL_COMMON_SOURCES	+=	drivers/qti/accesscontrol/xpu.c
-endif
 
 PLAT_BL_COMMON_SOURCES	+=	common/desc_image_load.c				\
 				drivers/qti/crypto/rng.c				\
@@ -126,11 +118,13 @@ BL31_SOURCES	+=	plat/qti/hoya/qtiseclib/src/qtiseclib_interface_stub.c \
 			drivers/qti/watchdog/watchdog.c
 else
 $(eval $(call add_define,QTISECLIB_PATH))
+$(eval $(call add_define,QTI_XPU_BYPASS))
 # use library provided by QTISECLIB_PATH
-BL31_SOURCES	+=			drivers/qti/sec_core/sec_core_stub.c \
-					drivers/qti/qtimer/qtimer_stub.c \
-					drivers/qti/watchdog/watchdog_stub.c \
-					drivers/qti/accesscontrol/access_control_stub.c
+BL31_SOURCES	+=	drivers/qti/sec_core/sec_core_stub.c			\
+			drivers/qti/qtimer/qtimer_stub.c			\
+			drivers/qti/watchdog/watchdog_stub.c			\
+			drivers/qti/accesscontrol/access_control_stub.c		\
+			drivers/qti/accesscontrol/xpu.c
 LDFLAGS += -L $(dir $(QTISECLIB_PATH))
 LDLIBS += -l$(patsubst lib%.a,%,$(notdir $(QTISECLIB_PATH)))
 endif

@@ -95,10 +95,7 @@ void bl31_plat_arch_setup(void)
  ******************************************************************************/
 void bl31_platform_setup(void)
 {
-#if QTI_MSM_XPU_BYPASS
-	INFO("Bypassing QTI MSM XPU...\n");
 	qti_msm_xpu_bypass();
-#endif
 	generic_delay_timer_init();
 
 	plat_qti_gic_driver_init();
