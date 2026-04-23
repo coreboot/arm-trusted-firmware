@@ -437,6 +437,14 @@ For Cortex-A78, the following errata build flags are defined :
 
 For Cortex-A78AE, the following errata build flags are defined :
 
+- ``ERRATA_A78_AE_1827431``: This applies erratum 1827431 workaround to
+   Cortex-A78AE CPU. This needs to be enabled for revision r0p0 of the CPU. It is
+   fixed in r0p1.
+
+- ``ERRATA_A78_AE_1827433``: This applies erratum 1827433 workaround to
+   Cortex-A78AE CPU. This needs to be enabled for revision r0p0 of the CPU. It is
+   fixed in r0p1.
+
 - ``ERRATA_A78_AE_1941500`` : This applies errata 1941500 workaround to
    Cortex-A78AE CPU. This needs to be enabled for revisions r0p0 and r0p1.
    This erratum is still open.
@@ -444,6 +452,10 @@ For Cortex-A78AE, the following errata build flags are defined :
 - ``ERRATA_A78_AE_1951502`` : This applies errata 1951502 workaround to
   Cortex-A78AE CPU. This needs to be enabled for revisions r0p0 and r0p1. This
   erratum is still open.
+
+- ``ERRATA_A78_AE_2242639``: This applies erratum 2242639 workaround to
+   Cortex-A78AE CPU. This needs to be enabled for revisions r0p0, r0p1 of the CPU.
+   It is fixed in r0p2. There is no workaround for revision r0p0.
 
 - ``ERRATA_A78_AE_2376748`` : This applies errata 2376748 workaround to
   Cortex-A78AE CPU. This needs to be enabled for revisions r0p0, r0p1 and r0p2.
@@ -453,10 +465,30 @@ For Cortex-A78AE, the following errata build flags are defined :
   Cortex-A78AE CPU. This needs to be enabled for revisions r0p0 and r0p1. This
   erratum is still open.
 
+- ``ERRATA_A78_AE_2466780``: This applies erratum 2466780 workaround to
+   Cortex-A78AE CPU. This needs to be enabled for revisions r0p0, r0p1 of the CPU.
+   It is fixed in r0p2.
+
 - ``ERRATA_A78_AE_2712574`` : This applies erratum 2712574 workaround to
   Cortex-A78AE CPU. This erratum affects system configurations that do not use
   an ARM interconnect IP. This needs to be enabled for revisions r0p0, r0p1 and
   r0p2. This erratum is still open.
+
+- ``ERRATA_A78_AE_2743229``: This applies erratum 2743229 workaround to
+   Cortex-A78AE CPU. This needs to be enabled for revisions r0p0, r0p1, r0p2 of the
+   CPU. It is fixed in r0p3.
+
+- ``ERRATA_A78_AE_2779481``: This applies erratum 2779481 workaround to
+   Cortex-A78AE CPU. This needs to be enabled for revisions r0p0, r0p1, r0p2 of the
+   CPU. It is fixed in r0p3.
+
+- ``ERRATA_A78_AE_3888018``: This applies erratum 3888018 workaround to
+   Cortex-A78AE CPU. This needs to be enabled for revisions r0p0, r0p1, r0p2, r0p3
+   of the CPU. It is still open.
+
+- ``ERRATA_A78_AE_4302973``: This applies erratum 4302973 workaround to
+   Cortex-A78AE CPU. This needs to be enabled for revisions r0p0, r0p1, r0p2, r0p3
+   of the CPU. It is still open.
 
 For Cortex-A78C, the following errata build flags are defined :
 
