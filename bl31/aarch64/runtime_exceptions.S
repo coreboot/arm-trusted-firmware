@@ -10,7 +10,6 @@
 #include <asm_macros.S>
 #include <bl31/ea_handle.h>
 #include <bl31/interrupt_mgmt.h>
-#include <bl31/sync_handle.h>
 #include <common/runtime_svc.h>
 #include <context.h>
 #include <cpu_macros.S>
@@ -446,7 +445,7 @@ endfunc reflect_pending_async_ea_to_lower_el
 func brk_handler
 	/* Extract the ISS */
 	mrs	x10, esr_el3
-	ubfx	x10, x10, #ESR_ISS_SHIFT, #ESR_ISS_LENGTH
+	ubfx	x10, x10, #ESR_ISS_SHIFT, #ESR_ISS_WIDTH
 
 	/* Ensure the console is initialized */
 	bl	plat_crash_console_init

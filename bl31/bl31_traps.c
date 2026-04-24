@@ -14,29 +14,32 @@
 #include <lib/el3_runtime/context_mgmt.h>
 #include <lib/extensions/idte3.h>
 
-int handle_sysreg_trap(uint64_t esr_el3, cpu_context_t *ctx,
-			u_register_t flags __unused)
+int handle_sysreg_trap(uint64_t esr_el3, cpu_context_t *ctx, u_register_t flags)
 {
-	uint64_t __unused opcode = esr_el3 & ISS_SYSREG_OPCODE_MASK;
+	uint64_t opcode = EXTRACT(ESR_ISS, esr_el3) & ~(MASK(ISS_SYS64_DIR) | MASK(ISS_SYS64_RT));
+	uint8_t rt = EXTRACT(ISS_SYS64_RT, esr_el3);
 
-#if ENABLE_FEAT_IDTE3
-	/*
-	 * Handle trap for system registers with the following encoding
-	 * op0 == 3, op1 == 0/1, Crn == 0 (Group 3 & Group 5 ID registers)
-	 */
-	if ((esr_el3 & ISS_IDREG_OPCODE_MASK) == ISS_SYSREG_OPCODE_IDREG) {
-		return handle_idreg_trap(esr_el3, ctx, flags);
+	if (is_feat_idte3_supported() &&
+	    ((opcode >= ISS_SYSREG_OPCODE_IDREG_MIN &&
+	      opcode <= ISS_SYSREG_OPCODE_IDREG_MAX) ||
+	      opcode == ISS_SYSREG_OPCODE_GMID_EL1)) {
+		return handle_idreg_trap(rt, opcode, ctx, flags);
 	}
-#endif
 
-#if ENABLE_FEAT_RNG_TRAP
-	if ((opcode == ISS_SYSREG_OPCODE_RNDR) || (opcode == ISS_SYSREG_OPCODE_RNDRRS)) {
-		return plat_handle_rng_trap(esr_el3, ctx);
+	if (is_feat_rng_trap_supported() &&
+	    (opcode == ISS_SYSREG_OPCODE_RNDR ||
+	     opcode == ISS_SYSREG_OPCODE_RNDRRS)) {
+		/* Ignore XZR accesses and writes to the register */
+		if (rt == ISS_SYSREG_RT_XZR || !EXTRACT(ISS_SYS64_DIR, esr_el3)) {
+			return TRAP_RET_CONTINUE;
+		}
+
+		return plat_handle_rng_trap(rt, opcode == ISS_SYSREG_OPCODE_RNDRRS, ctx);
 	}
-#endif
 
 #if IMPDEF_SYSREG_TRAP
-	if ((opcode & ISS_SYSREG_OPCODE_IMPDEF) == ISS_SYSREG_OPCODE_IMPDEF) {
+	/* isolate selected bits and check they are all set */
+	if (opcode & ISS_SYSREG_OPCODE_IMPDEF_MASK == ISS_SYSREG_OPCODE_IMPDEF_MASK) {
 		return plat_handle_impdef_trap(esr_el3, ctx);
 	}
 #endif

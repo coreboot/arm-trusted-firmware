@@ -61,7 +61,7 @@ static bool get_handler_for_smc_fid(uint32_t smc_fid, rt_svc_handle_t *handler)
 #include <lib/extensions/ras_arch.h>
 
 #if FFH_SUPPORT
-static void ea_proceed(uint32_t ea_reason, u_register_t esr_el3, cpu_context_t *ctx)
+static void ea_proceed(uint32_t ea_reason, u_register_t esr_el3, u_register_t scr_el3, cpu_context_t *ctx)
 {
 	/*
 	 * If it is a double fault invoke platform handler.  Double fault
@@ -82,7 +82,7 @@ static void ea_proceed(uint32_t ea_reason, u_register_t esr_el3, cpu_context_t *
 	write_ctx_reg(state, CTX_DOUBLE_FAULT_ESR, esr_el3);
 
 	/* Call platform External Abort handler. */
-	plat_ea_handler(ea_reason, esr_el3, NULL, ctx, read_scr_el3() & SCR_NS_BIT);
+	plat_ea_handler(ea_reason, esr_el3, NULL, ctx, scr_el3 & SCR_NS_BIT);
 
 	/* Clear Double Fault storage */
 	write_ctx_reg(state, CTX_DOUBLE_FAULT_ESR, 0);
@@ -96,6 +96,8 @@ static void ea_proceed(uint32_t ea_reason, u_register_t esr_el3, cpu_context_t *
  */
 void handler_lower_el_async_ea(cpu_context_t *ctx)
 {
+	el3_state_t *state = get_el3state_ctx(ctx);
+	u_register_t scr_el3 = read_ctx_reg(state, CTX_SCR_EL3);
 	u_register_t esr_el3 = read_esr_el3();
 
 	if (is_feat_ras_supported()) {
@@ -117,7 +119,7 @@ void handler_lower_el_async_ea(cpu_context_t *ctx)
 		}
 	}
 
-	return ea_proceed(ERROR_EA_ASYNC, esr_el3, ctx);
+	return ea_proceed(ERROR_EA_ASYNC, esr_el3, scr_el3, ctx);
 }
 
 #endif /* FFH_SUPPORT */
@@ -128,6 +130,9 @@ void handler_lower_el_async_ea(cpu_context_t *ctx)
  */
 void handler_interrupt_exception(cpu_context_t *ctx)
 {
+	el3_state_t *state = get_el3state_ctx(ctx);
+	u_register_t scr_el3 = read_ctx_reg(state, CTX_SCR_EL3);
+
 	/*
 	 * Find out whether this is a valid interrupt type.
 	 * If the interrupt controller reports a spurious interrupt then return
@@ -164,7 +169,7 @@ void handler_interrupt_exception(cpu_context_t *ctx)
 		return;
 	}
 
-	handler(INTR_ID_UNAVAILABLE, read_scr_el3() & SCR_NS_BIT, ctx, NULL);
+	handler(INTR_ID_UNAVAILABLE, scr_el3 & SCR_NS_BIT, ctx, NULL);
 }
 
 static void smc_unknown(cpu_context_t *ctx)
@@ -204,9 +209,8 @@ static u_register_t get_flags(uint32_t smc_fid, u_register_t scr_el3)
 	return flags;
 }
 
-static void sync_handler(cpu_context_t *ctx, uint32_t smc_fid)
+static void sync_handler(cpu_context_t *ctx, uint32_t smc_fid, u_register_t scr_el3)
 {
-	u_register_t scr_el3 = read_scr_el3();
 	rt_svc_handle_t handler;
 
 	/*
@@ -237,14 +241,15 @@ void handler_sync_exception(cpu_context_t *ctx)
 	u_register_t esr_el3 = read_esr_el3();
 	u_register_t exc_class = EXTRACT(ESR_EC, esr_el3);
 	el3_state_t *state = get_el3state_ctx(ctx);
+	u_register_t scr_el3 = read_ctx_reg(state, CTX_SCR_EL3);
 
 	if (exc_class == EC_AARCH32_SMC || exc_class == EC_AARCH64_SMC) {
 		if (exc_class == EC_AARCH32_SMC && EXTRACT(FUNCID_CC, smc_fid) != 0) {
 			return smc_unknown(ctx);
 		}
-		return sync_handler(ctx, smc_fid);
+		return sync_handler(ctx, smc_fid, scr_el3);
 	} else if (exc_class == EC_AARCH64_SYS) {
-		int ret = handle_sysreg_trap(esr_el3, ctx, get_flags(smc_fid, read_scr_el3()));
+		int ret = handle_sysreg_trap(esr_el3, ctx, get_flags(smc_fid, scr_el3));
 		if (ret == TRAP_RET_CONTINUE) {
 			/* advance the PC to continue after the instruction */
 			write_ctx_reg(state, CTX_ELR_EL3, read_ctx_reg(state, CTX_ELR_EL3) + 4);
@@ -256,7 +261,7 @@ void handler_sync_exception(cpu_context_t *ctx)
 #if FFH_SUPPORT
 	/* If FFH Support then try to handle lower EL EA exceptions. */
 	} else if ((exc_class == EC_IABORT_LOWER_EL || exc_class == EC_DABORT_LOWER_EL)
-		    && ((read_ctx_reg(state, CTX_SCR_EL3) & SCR_EA_BIT) != 0UL)) {
+		    && ((scr_el3 & SCR_EA_BIT) != 0UL)) {
 		/*
 		 * Check for Uncontainable error type. If so, route to the
 		 * platform fatal error handler rather than the generic EA one.
@@ -267,7 +272,7 @@ void handler_sync_exception(cpu_context_t *ctx)
 			return plat_handle_uncontainable_ea();
 		}
 		/* Setup exception class and syndrome arguments for platform handler */
-		return ea_proceed(ERROR_EA_SYNC, esr_el3, ctx);
+		return ea_proceed(ERROR_EA_SYNC, esr_el3, scr_el3, ctx);
 #endif /* FFH_SUPPORT */
 	}
 
