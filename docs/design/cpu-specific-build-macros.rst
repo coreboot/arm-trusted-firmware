@@ -1297,9 +1297,49 @@ For Cortex-X925, the following errata build flags are defined :
 
 For Cortex-A510, the following errata build flags are defined :
 
+- ``ERRATA_A510_1910738``: This applies erratum 1910738 workaround to
+   Cortex-A510 CPU. This needs to be enabled for revision r0p0 of the CPU. It is
+   fixed in r0p1.
+
+- ``ERRATA_A510_1937669``: This applies erratum 1937669 workaround to
+   Cortex-A510 CPU. This needs to be enabled for revision r0p0 of the CPU. It is
+   fixed in r0p1.
+
+- ``ERRATA_A510_1942494``: This applies erratum 1942494 workaround to
+   Cortex-A510 CPU. This needs to be enabled for revision r0p0 of the CPU. It is
+   fixed in r0p1.
+
+- ``ERRATA_A510_1952872``: This applies erratum 1952872 workaround to
+   Cortex-A510 CPU. This needs to be enabled for revision r0p0 of the CPU. It is
+   fixed in r0p1.
+
+- ``ERRATA_A510_1966377``: This applies erratum 1966377 workaround to
+   Cortex-A510 CPU. This needs to be enabled for revision r0p0 of the CPU. It is
+   fixed in r0p1.
+
+- ``ERRATA_A510_1975068``: This applies erratum 1975068 workaround to
+   Cortex-A510 CPU. This needs to be enabled for revision r0p0 of the CPU. It is
+   fixed in r0p1.
+
+- ``ERRATA_A510_1976290``: This applies erratum 1976290 workaround to
+   Cortex-A510 CPU. This needs to be enabled for revision r0p0 of the CPU. It is
+   fixed in r0p1.
+
+- ``ERRATA_A510_2002389``: This applies erratum 2002389 workaround to
+   Cortex-A510 CPU. This needs to be enabled for revisions r0p0, r0p1 of the CPU.
+   It is fixed in r0p2.
+
 -  ``ERRATA_A510_2008766``: This applies errata 2008766 workaround to
    Cortex-A510 CPU. This needs to be enabled for revisions r0p0, r0p1, r0p2,
    r0p3, r1p0, r1p1, r1p2 and r1p3. It is still open.
+
+- ``ERRATA_A510_2027318``: This applies erratum 2027318 workaround to
+   Cortex-A510 CPU. This needs to be enabled for revisions r0p0, r0p1 of the CPU.
+   It is fixed in r0p2.
+
+- ``ERRATA_A510_2028010``: This applies erratum 2028010 workaround to
+   Cortex-A510 CPU. This needs to be enabled for revisions r0p0, r0p1 of the CPU.
+   It is fixed in r0p2.
 
 -  ``ERRATA_A510_2288014``: This applies errata 2288014 workaround to
    Cortex-A510 CPU. This needs to be enabled only for revisions r0p0, r0p1,
