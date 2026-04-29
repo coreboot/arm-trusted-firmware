@@ -8,6 +8,7 @@
 
 #include <lib/utils_def.h>
 #include <lib/xlat_tables/xlat_tables_v2.h>
+#include <plat/common/common_def.h>
 
 #define PLATFORM_LINKER_FORMAT		"elf64-littleaarch64"
 #define PLATFORM_LINKER_ARCH		aarch64
@@ -29,7 +30,8 @@
 #define PLAT_MAX_RET_STATE		U(2)
 
 #define BL31_BASE			U(0x204E0000)
-#define BL31_LIMIT			U(0x20520000)
+#define BL31_LIMIT			U(0x2051C000)
+#define BL31_SIZE			SZ_256K
 
 #define OCRAM_BASE			U(0x20480000)
 #define OCRAM_SIZE			U(0xA0000)
@@ -42,6 +44,8 @@
 /* GICv4 base address */
 #define PLAT_GICD_BASE			U(0x48000000)
 #define PLAT_GICR_BASE			U(0x48040000)
+#define PLAT_ARM_GICD_BASE      PLAT_GICD_BASE
+#define PLAT_ARM_GICR_BASE      PLAT_GICR_BASE
 
 #define PLAT_VIRT_ADDR_SPACE_SIZE	(ULL(1) << 32)
 #define PLAT_PHY_ADDR_SPACE_SIZE	(ULL(1) << 32)
@@ -80,10 +84,12 @@
 #define BBNSM_DP_EN			BIT(24)
 #define BBNSM_TOSP			BIT(25)
 
+#define CCM_BASE			U(0x44450000)
 #define SRC_BASE			U(0x44460000)
 #define GPC_BASE			U(0x44470000)
 #define BLK_CTRL_S_BASE			U(0x444F0000)
 #define S400_MU_BASE			U(0x47520000)
+#define ELE_MU_BASE			S400_MU_BASE
 
 /* system memory map define */
 #define AIPS2_MAP	MAP_REGION_FLAT(AIPS2_BASE, AIPSx_SIZE, MT_DEVICE | MT_RW | MT_NS)
@@ -94,6 +100,7 @@
 #define TRDC_W_MAP	MAP_REGION_FLAT(TRDC_W_BASE, TRDC_x_SISE, MT_DEVICE | MT_RW)
 #define TRDC_M_MAP	MAP_REGION_FLAT(TRDC_M_BASE, TRDC_x_SISE, MT_DEVICE | MT_RW)
 #define TRDC_N_MAP	MAP_REGION_FLAT(TRDC_N_BASE, TRDC_x_SISE, MT_DEVICE | MT_RW)
+#define S400_MU_MAP	MAP_REGION_FLAT(S400_MU_BASE, AIPSx_SIZE, MT_DEVICE | MT_RW)
 
 #define COUNTER_FREQUENCY		24000000
 

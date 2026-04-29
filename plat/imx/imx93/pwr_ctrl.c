@@ -41,6 +41,8 @@ void pwr_sys_init(void)
 	src_mem_lpm_en(SRC_A55P0_MEM, MEM_OFF);
 	/* For A55 core, only need to be on in RUN mode */
 	src_mix_set_lpm(SRC_A55C0, 0x0, CM_MODE_WAIT);
+	/* Set CNT_MODE=0 to reduce unnecessary latency */
+	src_ack_cnt_mode(SRC_A55C0, 0x0);
 	/* whitelist: 0x1 for domain 0 only */
 	src_authen_config(SRC_A55C0, 0x1, 0x1);
 
@@ -54,10 +56,21 @@ void pwr_sys_init(void)
 	src_mem_lpm_en(SRC_A55_L3_MEM, MEM_RETN);
 
 	src_mix_set_lpm(SRC_A55P, 0x3, 0x1);
+	/* Set CNT_MODE=0 to reduce unnecessary latency */
+	src_ack_cnt_mode(SRC_A55P, 0x0);
 	/* whitelist: 0x8 for domain 3 only */
 	src_authen_config(SRC_A55P, 0x8, 0x1);
 
 	/* enable the HW LP handshake between S401 & A55 cluster */
 	mmio_setbits_32(BLK_CTRL_S_BASE + HW_LP_HANDHSK, BIT(5));
-}
 
+	/* Set the PMIC STBY OFF delay to 1.5ms by default */
+	mmio_clrsetbits_32(GPC_GLOBAL_BASE + PMIC_STBY_ACK_CTRL,
+			   PMIC_STBY_OFF_DELAY_MASK,
+			   PMIC_STBY_OFF_DELAY(PMIC_STBY_OFF_DELAY_1_5MS));
+
+	/* enable S401 clock gating LP handshake */
+	mmio_setbits_32(BLK_CTRL_S_BASE + HW_LP_HANDHSK, BIT(24) | BIT(23));
+	mmio_setbits_32(LPCG(3) + 0x10, BIT(13) | BIT(12));
+	mmio_setbits_32(LPCG(3) + 0x30, BIT(2));
+}

@@ -33,6 +33,13 @@
 #define PMIC_STBY_EN		BIT(0)
 #define ROSC_OFF_EN		BIT(0)
 
+/* PMIC_STBY_ACK_CTRL bit field definitions */
+#define PMIC_STBY_OFF_DELAY_SHIFT	16U
+#define PMIC_STBY_OFF_DELAY_MASK	(0xFFFU << PMIC_STBY_OFF_DELAY_SHIFT)
+#define PMIC_STBY_OFF_DELAY(x)		(((x) & 0xFFFU) << PMIC_STBY_OFF_DELAY_SHIFT)
+/* Default delay value for 1.5ms */
+#define PMIC_STBY_OFF_DELAY_1_5MS	0x31U
+
 /* GPC CPU_CTRL */
 #define CM_SLICE(x)		(GPC_BASE + 0x800 * (x))
 #define CM_AUTHEN_CTRL		U(0x4)
@@ -132,10 +139,13 @@ static inline void gpc_set_irq_mask(unsigned int cpu, unsigned int idx, uint32_t
 #define SRC_LPM_SETTING1	U(0x14)
 #define SRC_LPM_SETTING2	U(0x18)
 #define SRC_SLICE_SW_CTRL	U(0x20)
+#define PSW_ACK_CTRL_0		U(0x80)
 
 #define SRC_MEM_CTRL		U(0x4)
 #define MEM_LP_EN		BIT(2)
 #define MEM_LP_RETN		BIT(1)
+
+#define CNT_MODE(m)		(((m) & 0x3) << 28)
 
 enum mix_mem_mode {
 	MEM_OFF,
@@ -198,6 +208,16 @@ static inline void src_mem_lpm_dis(unsigned int mix)
 	mmio_clrbits_32(SRC_SLICE(mix) + SRC_MEM_CTRL, MEM_LP_EN | MEM_LP_RETN);
 }
 
+static inline void src_ack_cnt_mode(unsigned int mix, uint8_t mode)
+{
+	mmio_clrsetbits_32(SRC_SLICE(mix) + PSW_ACK_CTRL_0, CNT_MODE(0x3), CNT_MODE(mode));
+}
+
+/*******************************************************************************
+ * CCM definitions & declarations
+ ******************************************************************************/
+#define LPCG(x) 	(CCM_BASE + 0x8000 + (x) * 0x40)
+
 /*******************************************************************************
  * BLK_CTRL_S definitions & declarations
  ******************************************************************************/
@@ -213,4 +233,3 @@ static inline void src_mem_lpm_dis(unsigned int mix)
 void pwr_sys_init(void);
 
 #endif /* PWR_CTRL_H */
-

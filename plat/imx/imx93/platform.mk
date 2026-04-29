@@ -9,26 +9,24 @@ PLAT_INCLUDES		:=	-Iplat/imx/common/include		\
 # Translation tables library
 include lib/xlat_tables_v2/xlat_tables.mk
 
+USE_GIC_DRIVER := 3
 GICV3_SUPPORT_GIC600  :=      1
-
-# Include GICv3 driver files
-include drivers/arm/gic/v3/gicv3.mk
-
-IMX_GIC_SOURCES		:=	${GICV3_SOURCES}			\
-				plat/common/plat_gicv3.c		\
-				plat/common/plat_psci_common.c		\
-				plat/imx/common/plat_imx8_gic.c
 
 BL31_SOURCES		+=	common/desc_image_load.c			\
 				plat/common/aarch64/crash_console_helpers.S	\
-				plat/imx/imx93/aarch64/plat_helpers.S		\
-				plat/imx/imx93/plat_topology.c			\
+				plat/common/plat_psci_common.c			\
+				plat/imx/imx9/common/aarch64/plat_helpers.S		\
 				plat/imx/common/imx_common.c			\
+				plat/imx/common/plat_imx8_gic.c			\
 				plat/imx/common/lpuart_console.S		\
+				plat/imx/imx9/common/plat_topology.c		\
 				plat/imx/imx93/trdc.c			\
 				plat/imx/imx93/pwr_ctrl.c			\
 				plat/imx/imx93/imx93_bl31_setup.c		\
 				plat/imx/imx93/imx93_psci.c			\
+				plat/imx/common/imx_sip_svc.c			\
+				plat/imx/common/imx_sip_handler.c			\
+				plat/imx/imx9/common/ele_api.c			\
 				lib/cpus/aarch64/cortex_a55.S			\
 				drivers/delay_timer/delay_timer.c		\
 				drivers/delay_timer/generic_delay_timer.c	\
