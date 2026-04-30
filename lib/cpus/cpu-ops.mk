@@ -1057,6 +1057,26 @@ CPU_FLAG_LIST += ERRATA_N3_3456111
 # cpu and is still open.
 CPU_FLAG_LIST += ERRATA_N3_3699563
 
+# Flag to apply erratum 1785648 workaround during reset. This erratum applies to
+# revision r0p0 of the Cortex-X2 cpu and is fixed in r1p0.
+CPU_FLAG_LIST += ERRATA_X2_1785648
+
+# Flag to apply erratum 1793423 workaround during reset. This erratum applies to
+# revision r0p0 of the Cortex-X2 cpu and is fixed in r1p0.
+CPU_FLAG_LIST += ERRATA_X2_1793423
+
+# Flag to apply erratum 1863568 workaround during reset. This erratum applies to
+# revision r0p0 of the Cortex-X2 cpu and is fixed in r1p0.
+CPU_FLAG_LIST += ERRATA_X2_1863568
+
+# Flag to apply erratum 1887102 workaround during reset. This erratum applies to
+# revisions r0p0, r1p0 of the Cortex-X2 cpu and is fixed in r2p0.
+CPU_FLAG_LIST += ERRATA_X2_1887102
+
+# Flag to apply erratum 1887413 workaround during reset. This erratum applies to
+# revision r0p0 of the Cortex-X2 cpu and is fixed in r1p0.
+CPU_FLAG_LIST += ERRATA_X2_1887413
+
 # Flag to apply erratum 1901946 workaround during reset. This erratum applies
 # only to revision r1p0 of the Cortex-X2 cpu, it is fixed in r2p0.
 CPU_FLAG_LIST += ERRATA_X2_1901946
