@@ -9,22 +9,33 @@
 #include <stdbool.h>
 
 #include <arch.h>
+#include <arch_features.h>
 #include <arch_helpers.h>
 #include <bl31/sync_handle.h>
 #include <context.h>
 
+#define RANDOM_VALUE ((u_register_t) 3288484550995823360ULL)
+
 /*
- * This emulation code here is not very meaningful: enabling the RNG
- * trap typically happens for a reason, so just calling the actual
- * hardware instructions might not be useful or even possible.
+ * Emulation for testing purposes. If FEAT_RNG is available, just use that for
+ * simplicity. If not, quickly make up a number that can pass for being random.
+ * This is insecure, however, as a test platform, this is not relevant on FVP.
  */
 #if ENABLE_FEAT_RNG_TRAP
-int plat_handle_rng_trap(uint8_t rt, bool rndrrs, cpu_context_t *ctx)
+int plat_handle_rng_trap(u_register_t *data, bool rndrrs)
 {
-	if (rndrrs) {
-		ctx->gpregs_ctx.ctx_regs[rt] = read_rndrrs();
+	if (is_feat_rng_supported()) {
+		/*
+		 * Architecturally, these can return failure. In practice the
+		 * model won't and even if does it doesn't matter.
+		 */
+		if (rndrrs) {
+			*data = read_rndrrs();
+		} else {
+			*data = read_rndr();
+		}
 	} else {
-		ctx->gpregs_ctx.ctx_regs[rt] = read_rndr();
+		return RANDOM_VALUE ^ read_cntpct_el0();
 	}
 
 	return TRAP_RET_CONTINUE;

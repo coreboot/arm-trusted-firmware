@@ -29,12 +29,41 @@ int handle_sysreg_trap(uint64_t esr_el3, cpu_context_t *ctx, u_register_t flags)
 	if (is_feat_rng_trap_supported() &&
 	    (opcode == ISS_SYSREG_OPCODE_RNDR ||
 	     opcode == ISS_SYSREG_OPCODE_RNDRRS)) {
-		/* Ignore XZR accesses and writes to the register */
-		if (rt == ISS_SYSREG_RT_XZR || !EXTRACT(ISS_SYS64_DIR, esr_el3)) {
-			return TRAP_RET_CONTINUE;
+		el3_state_t *state = get_el3state_ctx(ctx);
+		u_register_t *data;
+		u_register_t new_spsr;
+		int ret = TRAP_RET_CONTINUE;
+
+		/* Only expect reads, write shouldn't be possible. */
+		assert(EXTRACT(ISS_SYS64_DIR, esr_el3) != 0);
+
+		/* Successful reads should have NZCV == 0 */
+		new_spsr = read_ctx_reg(state, CTX_SPSR_EL3);
+		new_spsr &= ~SPSR_NZCV;
+
+		/*
+		 * Don't generate entropy for XZR accesses as it will be unused.
+		 * Report success despite the zero read. Reporting failure would
+		 * also be logical but C6.1.4.1 doesn't make this clear and
+		 * success is simpler for now.
+		 */
+		if (rt != ISS_SYSREG_RT_XZR) {
+			data = &(ctx->gpregs_ctx.ctx_regs[rt]);
+
+			ret = plat_handle_rng_trap(data, opcode == ISS_SYSREG_OPCODE_RNDRRS);
+			if (ret == TRAP_RET_UNHANDLED) {
+				/* Failure is signaled with 0 and NZCV = 0b0100. */
+				new_spsr |= SPSR_Z_BIT;
+				*data = 0;
+				ret = TRAP_RET_CONTINUE;
+			}
+
 		}
 
-		return plat_handle_rng_trap(rt, opcode == ISS_SYSREG_OPCODE_RNDRRS, ctx);
+		write_ctx_reg(state, CTX_SPSR_EL3, new_spsr);
+		assert(ret == TRAP_RET_CONTINUE);
+
+		return ret;
 	}
 
 #if IMPDEF_SYSREG_TRAP

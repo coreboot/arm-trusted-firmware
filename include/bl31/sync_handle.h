@@ -45,9 +45,9 @@ u_register_t create_spsr(u_register_t old_spsr, unsigned int target_el);
 /* Prototypes for system register emulation handlers provided by platforms. */
 int plat_handle_impdef_trap(uint64_t esr_el3, cpu_context_t *ctx);
 #if ENABLE_FEAT_RNG_TRAP
-int plat_handle_rng_trap(uint8_t rt, bool rndrrs, cpu_context_t *ctx);
+int plat_handle_rng_trap(u_register_t *data, bool rndrrs);
 #else
-static inline int plat_handle_rng_trap(uint8_t rt, bool rndrrs, cpu_context_t *ctx)
+static inline int plat_handle_rng_trap(u_register_t *data, bool rndrrs)
 {
 	return TRAP_RET_UNHANDLED;
 }
