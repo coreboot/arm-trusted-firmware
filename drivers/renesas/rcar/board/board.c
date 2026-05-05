@@ -20,6 +20,8 @@
 #define BOARD_DEFAULT		(BOARD_EBISU << BOARD_CODE_SHIFT)
 #elif (RCAR_LSI == RCAR_V3M)
 #define BOARD_DEFAULT		(BOARD_EAGLE << BOARD_CODE_SHIFT)
+#elif PMIC_RAA271003
+#define BOARD_DEFAULT		(BOARD_GEIST << BOARD_CODE_SHIFT)
 #else
 #define BOARD_DEFAULT		(BOARD_SALVATOR_X << BOARD_CODE_SHIFT)
 #endif
@@ -39,11 +41,13 @@
 #define DR_ID	{ 0x10U, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU }
 #define EA_ID	{ 0x10U, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU }
 #define KK_ID	{ 0x10U, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU }
+#define GE_ID	{ 0x10U, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU }
 
 const char *g_board_tbl[] = {
 	[BOARD_STARTER_KIT_PRE] = "Starter Kit Premier",
 	[BOARD_STARTER_KIT] = "Starter Kit",
 	[BOARD_SALVATOR_XS] = "Salvator-XS",
+	[BOARD_GEIST] = "Geist",
 	[BOARD_SALVATOR_X] = "Salvator-X",
 	[BOARD_EBISU_4D] = "Ebisu-4D",
 	[BOARD_KRIEK] = "Kriek",
@@ -59,6 +63,7 @@ int32_t rcar_get_board_type(uint32_t *type, uint32_t *rev)
 	const uint8_t board_tbl[][8] = {
 		[BOARD_STARTER_KIT_PRE] = SKP_ID,
 		[BOARD_SALVATOR_XS] = SXS_ID,
+		[BOARD_GEIST] = GE_ID,
 		[BOARD_STARTER_KIT] = SK_ID,
 		[BOARD_SALVATOR_X] = SX_ID,
 		[BOARD_EBISU_4D] = EB4_ID,
@@ -72,7 +77,7 @@ int32_t rcar_get_board_type(uint32_t *type, uint32_t *rev)
 	if (board_id != BOARD_ID_UNKNOWN)
 		goto get_type;
 
-#if PMIC_ROHM_BD9571
+#if PMIC_ROHM_BD9571 || PMIC_RAA271003
 	/* Board ID detection from EEPROM */
 	ret = rcar_iic_dvfs_receive(EEPROM, BOARD_ID, &board_id);
 	if (ret) {

@@ -199,6 +199,16 @@ static void __dead2 rcar_system_off(void)
 	rcar_pwrc_clusteroff(mpidr);
 
 #endif /* PMIC_ROHM_BD9571 */
+
+#if PMIC_RAA271003
+	/* Clear Auto boot (reg 0x604) */
+	rcar_iic_dvfs_send(RAA271003_ADD_PAGE6, 0x04, 0);
+
+	/* Change State from ACTIVE -> READY */
+	/* READY state */
+	rcar_iic_dvfs_send(RAA271003_ADD_PAGE6, 0x07, 0x1);
+#endif /* PMIC_RAA271003 */
+
 	wfi();
 	ERROR("RCAR System Off: operation not handled.\n");
 	panic();
@@ -241,6 +251,21 @@ done:
 #if (RCAR_GEN3_ULCB == 1)
 	rcar_cpld_reset_cpu();
 #endif
+#endif
+#elif PMIC_RAA271003
+#if RCAR_SYSTEM_SUSPEND
+	int32_t error;
+	/* Clean reg 0x75B and write SYSTEM_RST_BIT */
+	rcar_iic_dvfs_send(RAA271003_ADD_PAGE7, KEEP_STATUS_REG, KEEP_STATUS_CLEAN_VAL);
+
+	error = rcar_iic_dvfs_send(RAA271003_ADD_PAGE7, KEEP_STATUS_REG, SYSTEM_RST_BIT_RST);
+	if (error) {
+		ERROR("Failed to send SYSTEM_RST_BIT (%d)\n", error);
+	}
+
+	raa271003_system_reset();
+#else
+	rcar_pwrc_system_reset();
 #endif
 #else
 	rcar_pwrc_system_reset();
