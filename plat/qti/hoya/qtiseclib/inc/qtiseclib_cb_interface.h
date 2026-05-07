@@ -46,13 +46,14 @@ void qtiseclib_cb_udelay(uint32_t usec);
 
 void qtiseclib_cb_console_flush(void);
 
+void qtiseclib_cb_flush_dcache_all(void);
+
 #if QTI_SDI_BUILD
 int qtiseclib_cb_mmap_remove_dynamic_region(uintptr_t base_va, size_t size);
 int qtiseclib_cb_mmap_add_dynamic_region(unsigned long long base_pa,
 					 size_t size,
 					 qtiseclib_mmap_attr_t attr);
 
-void qtiseclib_cb_flush_dcache_all(void);
 void qtiseclib_cb_get_ns_ctx(qtiseclib_dbg_a64_ctxt_regs_type *ns_ctx);
 #endif
 

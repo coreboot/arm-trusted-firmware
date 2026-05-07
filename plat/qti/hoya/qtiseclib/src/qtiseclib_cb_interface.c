@@ -126,6 +126,11 @@ void qtiseclib_cb_console_flush(void)
 	return console_flush();
 }
 
+void qtiseclib_cb_flush_dcache_all(void)
+{
+	dcsw_op_all(DCCISW);
+}
+
 #if QTI_SDI_BUILD
 void qtiseclib_cb_get_ns_ctx(qtiseclib_dbg_a64_ctxt_regs_type *qti_ns_ctx)
 {
@@ -180,11 +185,6 @@ void qtiseclib_cb_get_ns_ctx(qtiseclib_dbg_a64_ctxt_regs_type *qti_ns_ctx)
 	qti_ns_ctx->x30 = read_ctx_reg(get_gpregs_ctx(ctx), CTX_GPREG_LR);
 	qti_ns_ctx->sp_el0 =
 	    read_ctx_reg(get_gpregs_ctx(ctx), CTX_GPREG_SP_EL0);
-}
-
-void qtiseclib_cb_flush_dcache_all(void)
-{
-	dcsw_op_all(DCCISW);
 }
 
 int qtiseclib_cb_mmap_add_dynamic_region(unsigned long long base_pa,
