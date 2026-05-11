@@ -40,6 +40,8 @@
 				&CPU7>;
 			arm,iaffids = /bits/ 16 <0 1 2 3 4 5 6 7>;
 
+			dma-noncoherent;
+
 			its@2f120000 {
 				compatible = "arm,gic-v5-its";
 				reg = <0x0 0x2f120000 0x0 0x10000>;    /* NS ITS_CONFIG_FRAME */
@@ -49,6 +51,8 @@
 				#size-cells = <2>;
 
 				ranges;
+
+				dma-noncoherent;
 
 				its0: msi-controller@2f130000 {
 					reg = <0x0 0x2f130000 0x0 0x10000>;  /* ITS_TRANSLATE_FRAME */
@@ -82,7 +86,6 @@
 
 	timer@2a810000 {
 			frame@2a830000 {
-				/* Formerly GIC_LPI 58, now wire 26 as SPI. */
 				interrupts = <GIC_SPI 26 IRQ_TYPE_LEVEL_HIGH>;
 			};
 	};
@@ -145,17 +148,17 @@
 
 #if (ENABLE_RMM == 1)
 	pci: pci@40000000 {
-		interrupt-map = <0 0 0 1 &gic 0 GIC_SPI 200 IRQ_TYPE_LEVEL_HIGH>,
-				<0 0 0 2 &gic 0 GIC_SPI 201 IRQ_TYPE_LEVEL_HIGH>,
-				<0 0 0 3 &gic 0 GIC_SPI 202 IRQ_TYPE_LEVEL_HIGH>,
-				<0 0 0 4 &gic 0 GIC_SPI 203 IRQ_TYPE_LEVEL_HIGH>;
+		interrupt-map = <0 0 0 1 &gic 0 0 GIC_SPI 168 IRQ_TYPE_LEVEL_HIGH>,
+				<0 0 0 2 &gic 0 0 GIC_SPI 169 IRQ_TYPE_LEVEL_HIGH>,
+				<0 0 0 3 &gic 0 0 GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
+				<0 0 0 4 &gic 0 0 GIC_SPI 171 IRQ_TYPE_LEVEL_HIGH>;
 		msi-map = <0x0 &its0 0x0 0x10000>;
 	};
 	smmu: iommu@2b400000 {
-		interrupts = <GIC_SPI 106 IRQ_TYPE_EDGE_RISING>,
-			     <GIC_SPI 111 IRQ_TYPE_EDGE_RISING>,
-			     <GIC_SPI 107 IRQ_TYPE_EDGE_RISING>,
-			     <GIC_SPI 109 IRQ_TYPE_EDGE_RISING>;
+		interrupts = <GIC_SPI 74 IRQ_TYPE_EDGE_RISING>,
+			     <GIC_SPI 79 IRQ_TYPE_EDGE_RISING>,
+			     <GIC_SPI 75 IRQ_TYPE_EDGE_RISING>,
+			     <GIC_SPI 77 IRQ_TYPE_EDGE_RISING>;
 		msi-parent = <&its0 0x10000>;
 	};
 #endif /* ENABLE_RMM */
