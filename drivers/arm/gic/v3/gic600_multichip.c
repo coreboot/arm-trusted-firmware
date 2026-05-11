@@ -119,9 +119,10 @@ static void set_gicd_chipr_n(uintptr_t base,
 	if (spi_id_min == 0U && spi_id_max == 0U) {
 		spi_id_min = GIC600_SPI_ID_MIN;
 		spi_id_max = GIC600_SPI_ID_MIN;
-	} else if (spi_id_min < GIC600_SPI_ID_MIN || spi_id_max < spi_id_min ||
-		   spi_id_max > GIC600_SPI_ID_MAX) {
-		ERROR("Invalid SPI ID range: min=%u max=%u\n", spi_id_min, spi_id_max);
+	} else if (spi_id_min < GIC600_SPI_ID_MIN ||
+		   spi_id_max < spi_id_min) {
+		ERROR("Invalid SPI ID range: min=%u max=%u\n",
+		      spi_id_min, spi_id_max);
 		panic();
 	}
 
