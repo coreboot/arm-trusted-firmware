@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2025, Arm Limited and Contributors. All rights reserved.
+ * Copyright (c) 2015-2026, Arm Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -314,14 +314,10 @@ static void arm_bl2_plat_arch_setup(void)
 	enable_mmu_el1(0);
 #endif /* BL2_RUNS_AT_EL3 */
 
-#if ENABLE_FEAT_RME
 	/* Initialise and enable granule protection after MMU. */
 	if (is_feat_rme_supported()) {
-		assert(is_feat_rme_present());
-
 		arm_gpt_setup();
 	}
-#endif /* ENABLE_FEAT_RME */
 
 #else /* !__aarch64__ */
 	enable_mmu_svc_mon(0);

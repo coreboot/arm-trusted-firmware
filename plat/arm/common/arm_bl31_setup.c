@@ -540,16 +540,8 @@ void __init arm_bl31_plat_arch_setup(void)
 	 * processor. The tables have already been initialized by a previous BL
 	 * stage, so there is no need to provide any PAS here. This function
 	 * sets up pointers to those tables.
-	 *
-	 * Although FEAT_RME supports feature detection, a build with
-	 * ENABLE_FEAT_RME=0 and -O0 (no optimization) fails due to undefined
-	 * reference to gpt library calls as the compiler doesn't optimise the
-	 * check done using is_feat_rme_supported(). So calls to gpt library
-	 * are gated using ENABLE_FEAT_RME.
 	 */
-#if ENABLE_FEAT_RME
 	if (is_feat_rme_supported()) {
-		assert(is_feat_rme_present());
 
 #if RESET_TO_BL31
 		/* Initialise and enable granule protection after MMU. */
@@ -561,7 +553,6 @@ void __init arm_bl31_plat_arch_setup(void)
 			panic();
 		}
 	}
-#endif /* ENABLE_FEAT_RME */
 
 	arm_setup_romlib();
 

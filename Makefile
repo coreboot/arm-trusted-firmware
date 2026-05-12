@@ -354,8 +354,6 @@ ifeq (${ENABLE_RMM},1)
 		CTX_INCLUDE_MPAM_REGS := 1
 	endif
 
-	# RMM enables CSV2_2 extension by default.
-	ENABLE_FEAT_CSV2_2 = 1
 	# Enable FIRME interface for CCA.
 	FIRME_SUPPORT := 1
 
